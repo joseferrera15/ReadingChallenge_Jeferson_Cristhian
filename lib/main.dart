@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:proyecto_final/src/views/login_page.dart';
 import 'package:proyecto_final/src/views/home_page.dart';
 import 'firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async 
 {
