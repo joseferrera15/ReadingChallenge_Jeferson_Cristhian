@@ -19,7 +19,7 @@ class ItemList extends StatelessWidget {
               : TextDecoration.none,
         ),
       ),
-      subtitle: Text(book.author ?? ''),
+      subtitle: Text(book.author),
       leading: CircleAvatar(
         backgroundColor: Colors.blue[100],
         child: Icon(

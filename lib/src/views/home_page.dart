@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:proyecto_final/src/providers/book_provider.dart';
@@ -21,8 +21,42 @@ class _HomePageState extends State<HomePage>
   final bookProvider = BookProvider();
 
   @override
+  void initState() 
+  {
+    super.initState();
+    initMessaging();
+  }
+
+  initMessaging() async
+  {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    await FirebaseMessaging.instance.setAutoInitEnabled(true);
+    
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    print("User granted permission: ${settings.authorizationStatus}");
+
+    final token = await FirebaseMessaging.instance.getToken();
+  }
+
+  @override
   Widget build(BuildContext context) 
   {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.data['page'] && context.mounted) {
+        context.goNamed(message.data['page']);
+      }
+    });
+
     return Scaffold
     (
       endDrawer: Drawer

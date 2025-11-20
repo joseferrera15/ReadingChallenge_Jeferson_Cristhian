@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -25,9 +28,15 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for linux - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
-        return windows;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for linux - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -39,16 +48,6 @@ class DefaultFirebaseOptions {
         );
     }
   }
-
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBFrb9QMuaQuM4z6g5OHZAzShPk623IADc',
-    appId: '1:1077986394972:web:7a6274a8200394b149b799',
-    messagingSenderId: '1077986394972',
-    projectId: 'reading-challenge-2b07c',
-    authDomain: 'reading-challenge-2b07c.firebaseapp.com',
-    storageBucket: 'reading-challenge-2b07c.firebasestorage.app',
-    measurementId: 'G-9E2V8PZS1Y',
-  );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAYETpnWDQ0uIN0g5tXUD75-k6FHAxx-A4',
@@ -66,24 +65,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'reading-challenge-2b07c.firebasestorage.app',
     iosBundleId: 'com.example.proyectoFinal',
   );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDUKNkKCLE2HmQsg7CUggYP6CVx3Cr7v58',
-    appId: '1:1077986394972:ios:acc3c5445bd8f7b149b799',
-    messagingSenderId: '1077986394972',
-    projectId: 'reading-challenge-2b07c',
-    storageBucket: 'reading-challenge-2b07c.firebasestorage.app',
-    iosBundleId: 'com.example.proyectoFinal',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBFrb9QMuaQuM4z6g5OHZAzShPk623IADc',
-    appId: '1:1077986394972:web:76afc3a50280554b49b799',
-    messagingSenderId: '1077986394972',
-    projectId: 'reading-challenge-2b07c',
-    authDomain: 'reading-challenge-2b07c.firebaseapp.com',
-    storageBucket: 'reading-challenge-2b07c.firebasestorage.app',
-    measurementId: 'G-4SRD2XFC54',
-  );
-
 }

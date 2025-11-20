@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage>
           setState(() => _isLoading = false);
           if (context.mounted) {
             Utils.showSnackBar(context: context, title: 'Bienvenido');
-            context.push('/home');
+            context.go('/home');
           }
         });
       }
@@ -110,7 +110,7 @@ class _LoginPageState extends State<LoginPage>
                 CustomTextField(
                   label: 'Contraseña',
                   hint: '••••••••',
-                  obscureText: _obscurePassword,
+                  obscureText: true,
                   controller: _passwordController,
                   prefixIcon: Icons.lock_outlined,
                   suffixIcon: _obscurePassword
@@ -222,7 +222,7 @@ class _LoginPageState extends State<LoginPage>
                       final user = await _handleGoogleSignIn();
 
                       if (user != null && context.mounted) {
-                        context.push('/todos');
+                        context.push('/home');
                       }
                     },
                     style: OutlinedButton.styleFrom(
