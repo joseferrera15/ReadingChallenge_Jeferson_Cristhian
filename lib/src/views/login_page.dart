@@ -35,7 +35,8 @@ class _LoginPageState extends State<LoginPage>
         setState(() => _isLoading = true);
 
         // Simular login - aquí iría tu lógica de autenticación
-        Future.delayed(const Duration(seconds: 2), () {
+        Future.delayed(const Duration(seconds: 2), () 
+        {
           setState(() => _isLoading = false);
           if (context.mounted) {
             Utils.showSnackBar(context: context, title: 'Bienvenido');
@@ -58,7 +59,7 @@ class _LoginPageState extends State<LoginPage>
     final credential = GoogleAuthProvider.credential(
       idToken: googleAuth.authentication.idToken,
     );
-
+    print(FirebaseAuth.instance.signInWithCredential(credential));
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
@@ -222,7 +223,7 @@ class _LoginPageState extends State<LoginPage>
                       final user = await _handleGoogleSignIn();
 
                       if (user != null && context.mounted) {
-                        context.push('/home');
+                        context.go('/home');
                       }
                     },
                     style: OutlinedButton.styleFrom(

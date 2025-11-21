@@ -7,7 +7,7 @@ class BookProvider
   Future<List<Book>> getAllBooks() async
   {
     final db = FirebaseFirestore.instance;
-    final collectionRefBooks = db.collection('books');
+    final collectionRefBooks = db.collection('users');
     final snapshotBooks = await collectionRefBooks.get();
 
     final books = List<Book>.from
@@ -26,10 +26,10 @@ class BookProvider
   Stream<List<Book>> getAllBooksStream() {
     final db = FirebaseFirestore.instance;
     final collectionRefBooks = db
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
         .collection('books')
-        .where('user', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
-        .where('completed', isEqualTo: "Finalizado")
-        .limit(10);
+        .limit(12);
 
     final snapshotBooks = collectionRefBooks.snapshots();
 
@@ -44,12 +44,12 @@ class BookProvider
     return books;
   }
 
-  Future<void> saveTodo(Map<String, dynamic> todo) async {
+  Future<void> saveBook(Map<String, dynamic> book) async {
     final db = FirebaseFirestore.instance;
 
-    final collectionRefTodos = db.collection('todos');
+    final collectionRefBooks = db.collection('books');
 
-    await collectionRefTodos.add(todo);
+    await collectionRefBooks.add(book);
 
     // return Todo.fromJson({'id': newTodo.id, ...todo});
   }

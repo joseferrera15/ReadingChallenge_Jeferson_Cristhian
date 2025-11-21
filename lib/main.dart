@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:proyecto_final/src/views/login_page.dart';
 import 'package:proyecto_final/src/views/home_page.dart';
+import 'package:proyecto_final/src/views/stadistics.dart';
 import 'firebase_options.dart';
 
 void main() async 
@@ -23,6 +24,8 @@ class MainApp extends StatelessWidget
   @override
   Widget build(BuildContext context) 
   {
+    print('Current user: ${FirebaseAuth.instance.currentUser}');
+
     return MaterialApp.router(
       routerConfig: GoRouter(
         
@@ -39,7 +42,7 @@ class MainApp extends StatelessWidget
 
           return null;
         },
-        initialLocation: '/home',
+        initialLocation: '/stadistics',
         routes: [
           GoRoute(path: '/login', name: 'login', builder: (context, state) => LoginPage()),
           GoRoute(path: '/register', name: 'register', builder: (context, state) => 
@@ -48,6 +51,7 @@ class MainApp extends StatelessWidget
             body: const Center(child: Text('Registro de usuario')),
           )),
           GoRoute(path: '/home', name: 'home', builder: (context, state) => HomePage()),
+          GoRoute(path: '/stadistics', name: 'statistics', builder: (context, state) => Stadistics()),
         ]
       ),
       debugShowCheckedModeBanner: false,

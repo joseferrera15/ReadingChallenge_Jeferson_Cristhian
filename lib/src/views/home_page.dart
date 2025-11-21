@@ -7,6 +7,8 @@ import 'package:proyecto_final/src/providers/book_provider.dart';
 import 'package:proyecto_final/src/models/book.dart';
 import 'package:proyecto_final/src/shared/utils.dart';
 import 'package:proyecto_final/src/widgets/item_list.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
 
 class HomePage extends StatefulWidget 
 {
@@ -19,6 +21,7 @@ class HomePage extends StatefulWidget
 class _HomePageState extends State<HomePage> 
 {
   final bookProvider = BookProvider();
+  final user = FirebaseAuth.instance.currentUser;
 
   @override
   void initState() 
@@ -61,9 +64,10 @@ class _HomePageState extends State<HomePage>
     (
       endDrawer: Drawer
       (
+        width: 320,
         child: DrawerHeader
         (
-          padding: EdgeInsetsGeometry.symmetric(vertical: 30, horizontal: 15),
+          padding: EdgeInsetsGeometry.symmetric(vertical: 35, horizontal: 10),
           child: ListView
           (
             children: 
@@ -74,25 +78,37 @@ class _HomePageState extends State<HomePage>
 
                 children: 
                 [
-                  
                   Row(
                     children: 
                     [
                       CircleAvatar
                       (
-                          backgroundColor: const Color.fromARGB(255, 153, 196, 192), 
+                        backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser?.photoURL == null ? 'user.png' : '${FirebaseAuth.instance.currentUser?.photoURL}'),
+                          //backgroundColor: const Color.fromARGB(255, 153, 196, 192), 
                           radius: 35, 
                           foregroundColor: Colors.black,
                       ),
                       SizedBox(width: 12),
-                      Text('Jeferson Reyes', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                      SizedBox(width: 8),
+                      Container(
+                        width: 170,
+                        child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: 
+                        [
+                          Text('${FirebaseAuth.instance.currentUser?.email}', style:  TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                          Text('${FirebaseAuth.instance.currentUser?.displayName}', style:  TextStyle(fontSize: 12)),
+                        ]
+                      ),
+                      ),
+                      
                       IconButton(
-                        icon: Icon(Icons.logout, size: 20, color: Colors.grey[600]),
+                        icon: Icon(Icons.logout, size: 15, color: Colors.grey[600]),
+                        splashColor: Colors.red[400],
+                        hoverColor: Colors.red[400],
                         onPressed: () async 
                         { 
                           await FirebaseAuth.instance.signOut();
-
+                          print('Current user: ${FirebaseAuth.instance.currentUser}');
                           if (!context.mounted) return;
                               
                           context.replace('/login');
@@ -102,11 +118,15 @@ class _HomePageState extends State<HomePage>
                   ),
                       SizedBox(height: 10),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: 
                         [
                           Text('Achievements:', style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.bold)),
                           Column
                           (
+                            spacing: 4,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: 
                             [
                               Text('Max. Page: 120 minutes', style: TextStyle(fontSize: 14),),
@@ -159,7 +179,7 @@ class _HomePageState extends State<HomePage>
                   //? Para actualizar
                   if (direction == DismissDirection.endToStart) {
                     context.pushNamed(
-                      'update-todo',
+                      'update-book',
                       pathParameters: {'id': books[index].id},
                       extra: books[index],
                     );
@@ -172,7 +192,7 @@ class _HomePageState extends State<HomePage>
                     confirmButton: () 
                     {
                       FirebaseFirestore.instance
-                          .collection('todos')
+                          .collection('books')
                           .doc(books[index].id)
                           .delete();
 
@@ -257,11 +277,10 @@ class _HomePageState extends State<HomePage>
 
       floatingActionButton: FloatingActionButton
       (
-        onPressed: () => setState(() 
+        onPressed: () => setState(()
         {
-          FirebaseAuth.instance.signOut();
+          // Aqui se agregaran nuevos libros a leer
         }),
-        tooltip: 'Increment Counter',
         child: const Icon(Icons.add),
       ),
       
@@ -276,11 +295,11 @@ class _HomePageState extends State<HomePage>
           children: [
             IconButton(
               icon: const Icon(Icons.home, color: Colors.black, size: 28,),
-              onPressed: () {},
+              onPressed: () {context.go( '/home' );},
             ),
             IconButton(
               icon: const Icon(Icons.line_axis_rounded, color: Colors.black, size: 28,),
-              onPressed: () {},
+              onPressed: () {context.go( '/stadistics' );},
             ),
           ],
         ),

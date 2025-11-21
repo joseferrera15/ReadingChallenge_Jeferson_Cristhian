@@ -16,6 +16,7 @@ dependencies:
   google_sign_in: ^7.2.0
   firebase_messaging: ^16.0.4
   cloud_firestore: ^6.1.0
+  flutter_staggered_animations: ^1.1.1
 
 dev_dependencies:
   flutter_test:
@@ -29,3 +30,4 @@ flutter:
     - assets/google.png
     - assets/stadistic.png
     - assets/maestria_cover.webp
+    - assets/user.png
