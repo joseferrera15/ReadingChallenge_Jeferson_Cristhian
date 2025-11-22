@@ -9,7 +9,8 @@ class ItemList extends StatelessWidget {
   final Book book;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     return ListTile(
       title: Text(
         book.title,
@@ -32,14 +33,11 @@ class ItemList extends StatelessWidget {
         activeColor: Colors.blue[100],
         value: book.status == 'Finalizado',
         onChanged: (value) async {
-          // setState(() {});
 
           final result = await provider.markAsComplete(
             docId: book.id,
             value: value ?? false,
           );
-          // if (result)
-          // todo.completed = value ?? false;
         },
       ),
     );
