@@ -1,15 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:proyecto_final/src/providers/book_provider.dart';
-import 'package:proyecto_final/src/models/book.dart';
-import 'package:proyecto_final/src/shared/utils.dart';
 import 'package:proyecto_final/src/widgets/LinearProgress.dart';
-import 'package:proyecto_final/src/widgets/item_list.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-
+import 'package:proyecto_final/src/views/admin_book_page.dart';
 
 class HomePage extends StatefulWidget 
 {
@@ -350,12 +345,17 @@ class _HomePageState extends State<HomePage>
       /*
       body: ,*/
 
+      
+
       floatingActionButton: FloatingActionButton
       (
-        onPressed: () => setState(()
+        heroTag: 'tag_admin_book',
+        backgroundColor: Colors.blue[300],
+        onPressed: () 
         {
-          // Aqui se agregaran nuevos libros a leer
-        }),
+          context.pushNamed('admin-book');
+        },
+
         child: const Icon(Icons.add),
       ),
       
