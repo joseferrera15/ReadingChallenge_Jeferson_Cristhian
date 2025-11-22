@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:proyecto_final/src/providers/book_provider.dart';
 import 'package:proyecto_final/src/models/book.dart';
 import 'package:proyecto_final/src/shared/utils.dart';
+import 'package:proyecto_final/src/widgets/LinearProgress.dart';
 import 'package:proyecto_final/src/widgets/item_list.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -150,10 +151,80 @@ class _HomePageState extends State<HomePage>
       appBar: AppBar
       (
         title: const Text('Books', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-        backgroundColor: const Color.fromARGB(255, 235, 235, 233), 
-        elevation: 10,
+        //backgroundColor: const Color.fromARGB(255, 235, 235, 233), 
+        elevation: 0.2,
+        shadowColor: Color(0xFFE5E5E5),
       ),
 
+      body: GridView.count
+      (
+        crossAxisCount: 2,
+        padding: const EdgeInsets.all(16.0),
+        crossAxisSpacing: 10.0,
+        mainAxisSpacing: 10.0,
+        children: List.generate(12, (index) 
+        {
+          return GestureDetector
+          (
+            onTap: () 
+            {
+              // Acción al tocar la tarjeta
+              // 1. Navegar a la pagina de detalles del libro y mostrar el cronometro
+            },
+            child: Card
+            (
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Column
+              (
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: 
+                [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Image(image: AssetImage('assets/maestria_cover.webp'), width: 80, height: 80,),
+                      IconButton(onPressed: () {}, icon: Icon(Icons.more_vert_rounded))
+                    ]),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    //mainAxisAlignment: MainAxisAlignment.center,
+
+                    children: [
+                      Text('Book ${index + 1}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 3),
+                      Text('Author Name', style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+
+                      Row(
+                        children: [
+                          Text('Progress'),
+                          SizedBox(width: 20),
+                          
+                          Column(
+                            children: [
+                              Text('110/220'),
+                              LinearProgres(value: 220, min: 1, width: 80, heightBar: 1),
+                            ],
+                          )
+                        ],
+                      ),
+                      
+                    ],
+                  ),
+                  //Icon(Icons.book, size: 50, color: Colors.blueAccent),
+                  
+                ],
+              ),
+            ),
+          );
+        }),
+      ),
+
+/*
       body: StreamBuilder
       (
         stream: bookProvider.getAllBooksStream(), 
@@ -162,6 +233,10 @@ class _HomePageState extends State<HomePage>
           if (snapshot.connectionState == ConnectionState.waiting) 
           {
             return Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No hay libros registrados aún.'));
           }
 
           if (snapshot.hasError) 
@@ -241,7 +316,7 @@ class _HomePageState extends State<HomePage>
                 ),
 
                 key: Key(books[index].id),
-                child: ItemList(book: books[index]),
+                child:  ItemList(book: books[index]),
               );
             },
           );
@@ -249,7 +324,7 @@ class _HomePageState extends State<HomePage>
           // información de todo lo que ocurre con el future
         },
       ),
-
+*/
 
 
 
@@ -286,15 +361,17 @@ class _HomePageState extends State<HomePage>
       
       bottomNavigationBar: BottomAppBar
       (
-        height: 30,
+        height: 40,
         color: const Color.fromARGB(255, 247, 247, 244),
-        clipBehavior: Clip.antiAlias,
+        shadowColor: Colors.black,
+        
         child: Row
         (
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             IconButton(
-              icon: const Icon(Icons.home, color: Colors.black, size: 28,),
+              icon: const Icon(Icons.home, color: Color.fromARGB(255, 51, 51, 51), size: 28, shadows: [Shadow(color: Color.fromARGB(255, 248, 211, 4), blurRadius: 1.2)],),
               onPressed: () {context.go( '/home' );},
             ),
             IconButton(

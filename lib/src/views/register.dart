@@ -2,21 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/custom_text_field.dart';
 import 'package:proyecto_final/src/providers/auth.dart';
+//import 'package:proyecto_final/src/views/login_page.dart';
+//import 'package:proyecto_final/src/shared/utils.dart';
+//import 'package:google_sign_in/google_sign_in.dart';
 
-class LoginPage extends StatefulWidget 
+class RegisterPage extends StatefulWidget 
 {
-  const LoginPage({super.key});
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> 
+class _RegisterPageState extends State<RegisterPage> 
 {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController(); 
   final _passwordController = TextEditingController();
+  final _passwordController1 = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscurePassword1 = true;
   bool _isLoading = false;
 
   @override
@@ -26,6 +31,49 @@ class _LoginPageState extends State<LoginPage>
     _passwordController.dispose();
     super.dispose();
   }
+
+/*
+  Future<User?> registerWithEmailAndPassword(String email, String password, String displayName) async 
+  {
+    try 
+    {
+      print('Intentando registrar: $email');
+
+
+      
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+
+      // Actualizar display name
+      await userCredential.user!.updateDisplayName(displayName);
+      
+      // Crear documento en Firestore
+      await _checkAndCreateUserDocument(userCredential.user!, displayName);
+      
+      print('Usuario registrado exitosamente: ${userCredential.user!.email}');
+      return userCredential.user;
+    } on FirebaseAuthException catch (e) 
+    {
+      print("Error en registro: ${e.code} - ${e.message}");
+      if (e.code == 'weak-password') {
+        print('La contraseña es muy débil.');
+      } else if (e.code == 'email-already-in-use') {
+        print('Ya existe una cuenta con este email.');
+      } else if (e.code == 'invalid-email') {
+        print('El formato del email es inválido.');
+      }
+      return null;
+    } 
+    catch (e) 
+    {
+      print("Error inesperado en registro: $e");
+      return null;
+    }
+  }
+*/
+
 
   @override
   Widget build(BuildContext context) 
@@ -40,7 +88,7 @@ class _LoginPageState extends State<LoginPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 55),
+              const SizedBox(height: 60),
               const Text('Bienvenido',
               style: TextStyle(
                 fontSize: 30, 
@@ -49,10 +97,10 @@ class _LoginPageState extends State<LoginPage>
               ),
               const SizedBox(height: 10),
               const Text(
-                  'Inicia sesión en tu cuenta',
+                  'Crea una cuenta para continuar',
                   style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
               ),
-              const SizedBox(height: 5),
+              const SizedBox(height: 7),
               CustomTextField(
                   label: 'Correo electrónico',
                   hint: 'ejemplo@gmail.com',
@@ -75,12 +123,12 @@ class _LoginPageState extends State<LoginPage>
                 CustomTextField(
                   label: 'Contraseña',
                   hint: '••••••••',
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                   controller: _passwordController,
                   prefixIcon: Icons.lock_outlined,
                   suffixIcon: _obscurePassword
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
                   onSuffixIconTap: () 
                   {
                     setState(() => _obscurePassword = !_obscurePassword);
@@ -98,32 +146,43 @@ class _LoginPageState extends State<LoginPage>
                 ),
                 const SizedBox(height: 12),
 
-                // Recordar contraseña / Olvidé contraseña
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      '¿Olvidaste tu contraseña? Haz clic aquí',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 46, 106, 235),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
+                // Campo de confirmar contraseña
+                CustomTextField(
+                  label: 'Confirmar contraseña',
+                  hint: '••••••••',
+                  controller: _passwordController1,
+                  prefixIcon: Icons.lock_outlined,
+                  suffixIcon: _obscurePassword1
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  onSuffixIconTap: () 
+                  {
+                    setState(() {_obscurePassword1 = !_obscurePassword1;});
+                  },
+                  obscureText: _obscurePassword1,
+
+
+                  validator: (value) 
+                  {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa tu contraseña';
+                    }
+                    if (value.length < 6) {
+                      return 'La contraseña debe tener al menos 6 caracteres';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 20),
 
-                // Botón de inicio de sesión
+                // Botón de Registrarse
                 SizedBox(
                   width: double.infinity,
                   height: 48,
-                  child: ElevatedButton
-                  (
+                  child: ElevatedButton(
                     onPressed: () 
                     {
-                      //final user = AuthProvider().signInWithEmailAndPassword(_emailController.text, _passwordController.text);
+                      AuthProvider().createUserWithEmailAndPassword(_emailController.text, _passwordController.text);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 46, 106, 235),
@@ -142,7 +201,7 @@ class _LoginPageState extends State<LoginPage>
                             ),
                           )
                         : const Text(
-                            'Iniciar sesión',
+                            'Registrarse',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -189,13 +248,7 @@ class _LoginPageState extends State<LoginPage>
                   child: OutlinedButton(
                     onPressed: () async 
                     {
-                      final user = await AuthProvider().handleGoogleSignIn();
 
-                      context.go('/home');
-                      /*if (user != null && context.mounted) 
-                      {
-                        context.go('/home');
-                      }*/
                     },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(
@@ -230,9 +283,9 @@ class _LoginPageState extends State<LoginPage>
                 Center(
                   child: TextButton(
                     onPressed: () {
-                      context.push('/register');
+                      context.go('/login');
                     },
-                    child: Text('¿No tienes cuenta? Registrate'),
+                    child: Text('¿Ya tienes una cuenta? Inicia sesion aquí'),
                   ),
                 ),
             ],
