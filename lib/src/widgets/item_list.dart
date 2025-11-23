@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:proyecto_final/src/models/book.dart';
 import 'package:proyecto_final/src/providers/book_provider.dart';
 
-class ItemList extends StatelessWidget {
+class ItemList extends StatelessWidget 
+{
   ItemList({super.key, required this.book});
 
   final provider = BookProvider();
@@ -15,7 +16,7 @@ class ItemList extends StatelessWidget {
       title: Text(
         book.title,
         style: TextStyle(
-          decoration: book.status.name == 'Finalizado'
+          decoration: book.status == 'Finalizado'
               ? TextDecoration.lineThrough
               : TextDecoration.none,
         ),
@@ -34,10 +35,11 @@ class ItemList extends StatelessWidget {
         value: book.status == 'Finalizado',
         onChanged: (value) async {
 
+/*
           final result = await provider.markAsComplete(
             docId: book.id,
             value: value ?? false,
-          );
+          );*/
         },
       ),
     );

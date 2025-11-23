@@ -1,5 +1,5 @@
+import 'dart:ffi';
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,19 +9,19 @@ import 'package:proyecto_final/api/books.dart';
 import 'package:proyecto_final/src/shared/utils.dart';
 import 'package:proyecto_final/src/providers/book_provider.dart';
 
-class AdminTodoPage extends StatefulWidget 
+class AdminBookPage extends StatefulWidget 
 {
-  AdminTodoPage({super.key, this.book});
+  AdminBookPage({super.key, this.book});
 
   final Map<String, dynamic>? book;
 
   @override
-  State<AdminTodoPage> createState() => _AdminTodoPageState();
+  State<AdminBookPage> createState() => _AdminTodoPageState();
 }
 
-class _AdminTodoPageState extends State<AdminTodoPage> {
+class _AdminTodoPageState extends State<AdminBookPage> 
+{
   final titleController = TextEditingController();
-
   final autorController = TextEditingController();
   final estadoController = TextEditingController();
   final paginasLeidasController = TextEditingController();
@@ -33,26 +33,33 @@ class _AdminTodoPageState extends State<AdminTodoPage> {
   File? _image;
   //image picker
   final _picker = ImagePicker();
-  pickImage()async {
+
+  pickImage() async
+  {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-    setState(() {
-      _image = File(pickedFile.path);
-    });
-  }
+    if (pickedFile != null) 
+    {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
   }
 
 
   @override
-  Widget build(BuildContext context) {
-    //Id que me permite consultar a la BBDD la información actualziada
+  Widget build(BuildContext context) 
+  {
+    //Id que me permite consultar a la BBDD la información actualizada
     final bookId = GoRouterState.of(context).pathParameters['id'];
 
     //Lista de Estados
     final List<String>_listEstado = ['Pendiente', 'Finalizado','En progreso'];
     String? _selectedEstado;
-    List<DropdownMenuItem<String>> _buildDropdownMenuItems() {
-      return _listEstado.map((String estado) {
+
+    List<DropdownMenuItem<String>> _buildDropdownMenuItems() 
+    {
+      return _listEstado.map((String estado) 
+      {
         return DropdownMenuItem<String>(
           value: estado,
           child: Text(estado),
@@ -60,20 +67,28 @@ class _AdminTodoPageState extends State<AdminTodoPage> {
       }).toList();
     }
 
-    if (widget.book != null) {
+    if (widget.book != null) 
+    {
       titleController.text = widget.book!['title'];
-      autorController.text = widget.book!['autor'];
+      autorController.text = widget.book!['author'];
+      _image = File(widget.book!['cover']);
+      paginasLeidasController.text = widget.book!['currentPage'].toString();
+      paginasTotalesController.text = widget.book!['totalPages'].toString();
+      estadoController.text = widget.book!['status'];
     }
 
-    return Scaffold(
-      appBar: AppBar(
+    return Scaffold
+    (
+      appBar: AppBar
+      (
         title: Text(
           widget.book == null
               ? 'Agregando nuevo libro'
               : 'Editando el progreso del libro # $bookId',
         ),
       ),
-      body: SingleChildScrollView (
+      body: SingleChildScrollView 
+      (
         padding: EdgeInsetsGeometry.symmetric(vertical: 8, horizontal: 16),
         
         child: Column(
@@ -84,7 +99,7 @@ class _AdminTodoPageState extends State<AdminTodoPage> {
                 SizedBox(
                   width: 400, // Personaliza el ancho
                   height: 300, // Personaliza el alto
-                  child: _image != null?Image.file(_image!):
+                  child: _image != null ? Image.file(_image!):
                    Image(
                     image: NetworkImage("https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg"),
                     fit: BoxFit.cover, // Ajusta la imagen al espacio
@@ -196,11 +211,15 @@ class _AdminTodoPageState extends State<AdminTodoPage> {
                     
                   ],
                 ),
-        ),
-      floatingActionButton: FloatingActionButton(
+      ),
+      floatingActionButton: FloatingActionButton
+      (
+        heroTag: 'tag_agregar_libro',
         backgroundColor: Colors.blue[300],
-        onPressed: () async {
-          if (titleController.text.isEmpty) {
+        onPressed: () async 
+        {
+          if (titleController.text.isEmpty) 
+          {
             // ScaffoldMessenger.of(context).showSnackBar(
             //   SnackBar(
             //     content: Text(
@@ -216,67 +235,61 @@ class _AdminTodoPageState extends State<AdminTodoPage> {
               title: "El titulo es obligatorio",
               color: Colors.red,
             );
-            
 
             return;
           }
-          if (autorController.text.isEmpty) {
-           
-
+          if (autorController.text.isEmpty) 
+          {
             Utils.showSnackBar(
               context: context,
               title: "El Autor es obligatorio",
               color: Colors.red,
             );
-            
 
             return;
           }
-          if (paginasLeidasController.text.isEmpty) {
-           
-
+          if (paginasLeidasController.text.isEmpty) 
+          {
             Utils.showSnackBar(
               context: context,
               title: "Especifica las Paginas Leidas",
               color: Colors.red,
             );
-            
 
             return;
           }
-          if (paginasTotalesController.text.isEmpty) {
-           
-
+          if (paginasTotalesController.text.isEmpty) 
+          {
             Utils.showSnackBar(
               context: context,
               title: "Especifica el Total de Paginas",
               color: Colors.red,
             );
             
-
             return;
           }
-          
 
-          final Map<String, dynamic> newTodo = {
+          final Map<String, dynamic> newBook = 
+          {
             'title': titleController.text,
-            'autor': autorController.text,
-            'completed': false,
+            'author': autorController.text,
+            'cover': _image?.path,
+            'status': 'Pendiente',
+            'currentPage': int.parse(paginasLeidasController.text),
+            'totalPages': int.parse(paginasTotalesController.text),
             'user': FirebaseAuth.instance.currentUser?.uid,
           };
 
-          if (bookId == null) {
-            // todoList.add(newTodo);
-            // mostrar icono de carga
-            await bookProvider.saveBook(newTodo);
+          if (bookId == null) 
+          {
+            print("Se creara un nuevo libro");
+            await bookProvider.saveBook(newBook);
+          } 
+          else 
+          {
+            final indice = booksList.indexWhere((book) => book['id'].toString() == bookId);
 
-            // ocultar icono de carga
-          } else {
-            final indice = booksList.indexWhere(
-              (todo) => todo['id'].toString() == bookId,
-            );
-
-            booksList[indice] = newTodo;
+            booksList[indice] = newBook;
           }
 
           // final snackBar = SnackBar(
