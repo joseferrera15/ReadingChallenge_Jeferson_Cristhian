@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:proyecto_final/src/providers/book_provider.dart';
 import 'package:proyecto_final/src/models/book.dart';
 import 'package:proyecto_final/src/widgets/LinearProgress.dart';
-import 'package:proyecto_final/src/widgets/item_list.dart';
+import 'package:proyecto_final/src/shared/utils.dart';
 
 class HomePage extends StatefulWidget 
 {
@@ -211,7 +211,50 @@ class _HomePageState extends State<HomePage>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Image.file(File(books[index].coverImage), width: 100, height: 100,),
-                          IconButton(onPressed: () {}, icon: Icon(Icons.more_vert_rounded))
+                          PopupMenuButton<String>
+                          (
+                            onSelected: (value) 
+                            {
+                              switch (value) 
+                              {
+                                case 'Update':
+                                  context.pushNamed(
+                                    'update-book', 
+                                    pathParameters: {'id': books[index].id},
+                                    extra: books[index].toJson()
+                                  );
+                                  break;
+                                case 'Start':
+                                  
+                                  break;
+                                case 'Delete':
+                                  Utils.showConfirm(
+                                    context: context,
+                                    confirmButton: ()
+                                    {
+                                    FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(user?.uid)
+                                    .collection('books')
+                                    .doc(books[index].id)
+                                    .delete();
+
+                                    if (!context.mounted) return;
+
+                                    context.pop(books.remove(books[index]));
+                                    }
+                                  );
+                                  break;
+                                default: return;
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem(value: 'Update', child: Text('Update')),
+                              PopupMenuItem(value: 'Start', child: Text('Start')),
+                              PopupMenuItem(value: 'Delete', child: Text('Delete')),
+                            ],
+                            icon: Icon(Icons.more_vert_rounded)
+                          )
                         ]),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
