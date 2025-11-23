@@ -18,6 +18,7 @@ class CustomTextField extends StatefulWidget
   final Color borderColor;
   final Color focusedBorderColor;
   final Color filledColor;
+  final bool hasInfo;
 
   const CustomTextField({
     super.key,
@@ -37,6 +38,7 @@ class CustomTextField extends StatefulWidget
     this.borderColor = const Color(0xFFE0E0E0),
     this.focusedBorderColor = const Color(0xFF1F2937),
     this.filledColor = const Color(0xFFFAFAFA),
+    this.hasInfo = false
   });
 
   @override
@@ -65,18 +67,65 @@ class _CustomTextFieldState extends State<CustomTextField>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF1F2937),
-          ),
-        ),
+      children: 
+      [
+        ((){
+          if (widget.hasInfo)
+          {
+            return Row
+            (
+              spacing: 0,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+
+              children: 
+              [
+                Text(
+                  widget.label,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF1F2937),
+                  ),
+                ),
+                InkWell
+                (
+                  onTap: () => print("Hola"),
+
+                  splashFactory: InkRipple.splashFactory,
+                  borderRadius: BorderRadius.circular(20),
+                  splashColor: const Color.fromARGB(255, 114, 113, 113),
+                  highlightColor: const Color.fromARGB(255, 114, 113, 113),
+                  
+                  child: Container
+                  (
+                    decoration: BoxDecoration(color: const Color.fromARGB(255, 219, 219, 219), borderRadius: BorderRadius.circular(13)),
+                    padding: const EdgeInsets.all(5),
+                    child: Icon(Icons.question_mark_sharp, size: 12,),
+                  ),
+                )
+              ]
+            );
+          }
+          else
+          {
+            return Text(
+              widget.label,
+              style: const TextStyle
+              (
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1F2937),
+              ),
+            );
+          }
+        })(),
+
+        
         const SizedBox(height: 8),
         TextFormField(
           controller: widget.controller,
