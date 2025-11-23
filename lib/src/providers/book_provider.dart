@@ -57,21 +57,24 @@ class BookProvider
     .collection('books');
 
     await collectionRefBooks.add(book);
-    //return Book.fromJson({'id': newBook.id, ...book});
   }
 
-  Future<bool> markAsComplete({
-    required String docId,
-    required bool value,
-  }) async {
-    try {
+  Future<bool> markAsComplete({required String docId, required String value,}) async 
+  {
+    try 
+    {
       final db = FirebaseFirestore.instance;
+      final user = FirebaseAuth.instance;
 
-      final docRef = db.collection('books').doc(docId);
+      final docRef = db.collection('users')
+      .doc(user.currentUser?.uid)
+      .collection('books')
+      .doc(docId);
 
-      await docRef.update({'completed': value});
+      await docRef.update({'status': value});
       return true;
-    } catch (e) {
+    } catch (e) 
+    {
       return false;
     }
   }

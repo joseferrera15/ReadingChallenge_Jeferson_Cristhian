@@ -180,19 +180,34 @@ class _HomePageState extends State<HomePage>
             crossAxisSpacing: 10.0,
             mainAxisSpacing: 10.0,
 
-            children: List.generate(books.length, (index)
+            children: [
+            if(books.length < 12) 
+              GestureDetector 
+              (
+                onTap: () => context.push("/home/create"), 
+                child: Card(
+                  elevation: 3,
+                  color: const Color.fromARGB(255, 233, 227, 227),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Icon(Icons.add_rounded, size: 100,  color: Colors.green,),
+                )
+              ),
+            
+            ...List.generate(books.length, (index)
             {
+
               return GestureDetector
               (
                 onTap: () 
                 {
+                  // Aqui se mostrara la ventana para empezar a leer
                   context.pushNamed(
                     'update-book',
                     pathParameters: {'id': books[index].id},
                     extra: books[index].toJson(),
                   );
-                  // Acción al tocar la tarjeta
-                  // 1. Navegar a la pagina de detalles del libro y mostrar el cronometro
                 },
                 child: Card
                 (
@@ -204,13 +219,29 @@ class _HomePageState extends State<HomePage>
                   (
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
+
                     children: 
                     [
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Image.file(File(books[index].coverImage), width: 100, height: 100,),
+                        children: 
+                        [
+                          FutureBuilder<bool>(
+                            future: File(books[index].coverImage).exists(),
+                            builder: (context, snapshot)
+                            {
+                              if (snapshot.data == true) 
+                              {
+                                return Image.file(File(books[index].coverImage), width: 100, height: 100,);
+                              }
+                              else
+                              {
+                                return Image.asset("assets/maestria_cover.webp" , width: 100, height: 100,);
+                              }
+                            },
+                          ),
+                          
                           PopupMenuButton<String>
                           (
                             onSelected: (value) 
@@ -261,9 +292,9 @@ class _HomePageState extends State<HomePage>
                         //mainAxisAlignment: MainAxisAlignment.center,
 
                         children: [
-                          Text('${books[index].title}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                          Text(books[index].title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                           SizedBox(height: 3),
-                          Text('${books[index].author}', style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                          Text(books[index].author, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
 
                           Row(
                             children: [
@@ -275,12 +306,11 @@ class _HomePageState extends State<HomePage>
                                 children: 
                                 [
                                   Text('${books[index].currentPage}/${books[index].totalPages}'),
-                                  LinearProgres(value: 220, min: 1, width: 80, heightBar: 1),
+                                  LinearProgres(value: (books[index].currentPage/books[index].totalPages), min: 4, width: 80, heightBar: 3),
                                 ],
                               )
                             ],
                           ),
-                          
                         ],
                       ),
                     ],
@@ -288,21 +318,9 @@ class _HomePageState extends State<HomePage>
                 ),
               );
             })
-          );
+        ]);
       }),
 
-      floatingActionButton: FloatingActionButton
-      (
-        heroTag: 'tag_admin_book',
-        backgroundColor: Colors.blue[300],
-        onPressed: () 
-        {
-          context.pushNamed('new-book');
-        },
-
-        child: const Icon(Icons.add),
-      ),
-      
       bottomNavigationBar: BottomAppBar
       (
         height: 40,

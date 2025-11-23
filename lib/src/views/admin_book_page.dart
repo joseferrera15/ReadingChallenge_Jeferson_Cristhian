@@ -216,6 +216,7 @@ class _AdminTodoPageState extends State<AdminBookPage>
         backgroundColor: Colors.blue[300],
         onPressed: () async 
         {
+          print(_image?.path);
           if (titleController.text.isEmpty) 
           {
             // ScaffoldMessenger.of(context).showSnackBar(
@@ -271,7 +272,7 @@ class _AdminTodoPageState extends State<AdminBookPage>
           {
             'title': titleController.text,
             'author': autorController.text,
-            'cover': _image?.path,
+            'cover': _image?.path ?? "maestria_cover.webp",
             'status': 'Pendiente',
             'currentPage': int.parse(paginasLeidasController.text),
             'totalPages': int.parse(paginasTotalesController.text),
