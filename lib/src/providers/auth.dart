@@ -1,14 +1,15 @@
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AuthProvider 
 {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> createUserWithEmailAndPassword(String email, String password) async 
+  Future<void> createUserWithEmailAndPassword(BuildContext context, String email, String password) async 
   {
     try 
     {
@@ -17,7 +18,7 @@ class AuthProvider
         password: password,
       );
     
-      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!);
+      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!, context);
     } catch (e) 
     {
       print("Error en iniciar sesion por correo: $e");
@@ -40,19 +41,19 @@ class AuthProvider
     }
   }
 */
-  Future<AuthCredential?> handleGoogleSignIn() async 
+  Future<AuthCredential?> handleGoogleSignIn(BuildContext context) async 
   {
     try
     {
       final GoogleSignIn signIn = GoogleSignIn.instance;
 
-      await signIn.initialize(serverClientId: '1077986394972-ku1lckvvac0scjt4ht3074m9ceb2ntks.apps.googleusercontent.com');
+      //await signIn.initialize(serverClientId: '1077986394972-ku1lckvvac0scjt4ht3074m9ceb2ntks.apps.googleusercontent.com');
 
       // Obtain the auth details from the request
       final GoogleSignInAccount googleAuth = await signIn.authenticate();
 
       // Obtenemos el id token
-      final GoogleSignInAuthentication auth = await googleAuth.authentication;
+      final GoogleSignInAuthentication auth = googleAuth.authentication;
       String? idToken = auth.idToken;
 
 
@@ -62,14 +63,14 @@ class AuthProvider
       );
 
       await FirebaseAuth.instance.signInWithCredential(credential);
-      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!);
+      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!, context);
     } catch (e) 
     {
       print("Error en Google Sign-In: $e");
     }
   }
 
-  Future<void> _checkAndCreateUserDocument(User user) async 
+  Future<void> _checkAndCreateUserDocument(User user, BuildContext context) async 
   {
     final userDoc = _firestore.collection('users').doc(user.uid);
     
@@ -94,5 +95,7 @@ class AuthProvider
         'lastLogin': FieldValue.serverTimestamp(),
       });
     }
+
+    context.go('/home');
   }
 }
