@@ -236,7 +236,11 @@ class _HomePageState extends State<HomePage>
                               }
                               else
                               {
-                                return Image.asset("assets/maestria_cover.webp" , width: 100, height: 100,);
+                                return Image(
+                                  image: NetworkImage("https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg"),
+                                  width: 110,
+                                  //fit: BoxFit.none, // Ajusta la imagen al espacio
+                                );
                               }
                             },
                           ),
@@ -302,10 +306,13 @@ class _HomePageState extends State<HomePage>
                               
                               Column
                               (
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: 
                                 [
-                                  Text('${books[index].currentPage}/${books[index].totalPages}'),
+                                  //Text('${books[index].currentPage}/${books[index].totalPages}'), // Con paginas y total de paginas
                                   LinearProgres(value: (books[index].currentPage/books[index].totalPages), min: 4, width: 80, heightBar: 3),
+                                  Text('${((books[index].currentPage/books[index].totalPages)*100).round()}%') // Se trabaja mediante porcentajes
                                 ],
                               )
                             ],
