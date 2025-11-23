@@ -1,0 +1,98 @@
+import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class AuthProvider 
+{
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<void> createUserWithEmailAndPassword(String email, String password) async 
+  {
+    try 
+    {
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    
+      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!);
+    } catch (e) 
+    {
+      print("Error en iniciar sesion por correo: $e");
+    }
+  }
+/*
+  Future<void> signInWithEmailAndPassword(String email, String password) async 
+  {
+    try 
+    {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    
+      await _checkAndCreateUserDocument(userCredential.user!);
+    } catch (e) 
+    {
+      print("Error en iniciar sesion por correo: $e");
+    }
+  }
+*/
+  Future<AuthCredential?> handleGoogleSignIn() async 
+  {
+    try
+    {
+      final GoogleSignIn signIn = GoogleSignIn.instance;
+
+      await signIn.initialize(serverClientId: '1077986394972-ku1lckvvac0scjt4ht3074m9ceb2ntks.apps.googleusercontent.com');
+
+      // Obtain the auth details from the request
+      final GoogleSignInAccount googleAuth = await signIn.authenticate();
+
+      // Obtenemos el id token
+      final GoogleSignInAuthentication auth = await googleAuth.authentication;
+      String? idToken = auth.idToken;
+
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        idToken: idToken,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!);
+    } catch (e) 
+    {
+      print("Error en Google Sign-In: $e");
+    }
+  }
+
+  Future<void> _checkAndCreateUserDocument(User user) async 
+  {
+    final userDoc = _firestore.collection('users').doc(user.uid);
+    
+    final docSnapshot = await userDoc.get();
+    
+    if (!docSnapshot.exists) 
+    {
+      // Crear nuevo documento si no existe
+      await userDoc.set({
+        'uid': user.uid,
+        'email': user.email,
+        'displayName': user.displayName ?? '',
+        'photoURL': user.photoURL ?? '',
+        'provider': user.providerData[0].providerId,
+        'createdAt': FieldValue.serverTimestamp(),
+        'lastLogin': FieldValue.serverTimestamp(),
+      });
+    } else 
+    {
+      // Actualizar último login si ya existe
+      await userDoc.update({
+        'lastLogin': FieldValue.serverTimestamp(),
+      });
+    }
+  }
+}

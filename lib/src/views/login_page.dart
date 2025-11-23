@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/custom_text_field.dart';
-import 'package:proyecto_final/src/shared/utils.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:proyecto_final/src/providers/auth.dart';
 
 class LoginPage extends StatefulWidget 
 {
@@ -27,40 +25,6 @@ class _LoginPageState extends State<LoginPage>
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  void _handleLogin()
-  {
-    if (_formKey.currentState!.validate()) {
-        setState(() => _isLoading = true);
-
-        // Simular login - aquí iría tu lógica de autenticación
-        Future.delayed(const Duration(seconds: 2), () 
-        {
-          setState(() => _isLoading = false);
-          if (context.mounted) {
-            Utils.showSnackBar(context: context, title: 'Bienvenido');
-            context.go('/home');
-          }
-        });
-      }
-  }
-
-  Future<UserCredential?> _handleGoogleSignIn() async {
-    // Trigger the authentication flow
-    final GoogleSignIn signIn = GoogleSignIn.instance;
-
-    await signIn.initialize();
-
-    // Obtain the auth details from the request
-    final GoogleSignInAccount googleAuth = await signIn.authenticate();
-
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      idToken: googleAuth.authentication.idToken,
-    );
-    print(FirebaseAuth.instance.signInWithCredential(credential));
-    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   @override
@@ -155,8 +119,12 @@ class _LoginPageState extends State<LoginPage>
                 SizedBox(
                   width: double.infinity,
                   height: 48,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _handleLogin,
+                  child: ElevatedButton
+                  (
+                    onPressed: () 
+                    {
+                      //final user = AuthProvider().signInWithEmailAndPassword(_emailController.text, _passwordController.text);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 46, 106, 235),
                       disabledBackgroundColor: const Color(0xFFD1D5DB),
@@ -219,12 +187,15 @@ class _LoginPageState extends State<LoginPage>
                   width: double.infinity,
                   height: 48,
                   child: OutlinedButton(
-                    onPressed: () async {
-                      final user = await _handleGoogleSignIn();
+                    onPressed: () async 
+                    {
+                      final user = await AuthProvider().handleGoogleSignIn();
 
-                      if (user != null && context.mounted) {
+                      context.go('/home');
+                      /*if (user != null && context.mounted) 
+                      {
                         context.go('/home');
-                      }
+                      }*/
                     },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(
