@@ -114,15 +114,18 @@ class _RegisterPageState extends State<RegisterPage>
                 const SizedBox(height: 20),
 
                 // Campo de contraseña
-                CustomTextField(
+                
+                CustomTextField
+                (
                   label: 'Contraseña',
                   hint: '••••••••',
+                  hasInfo: true,
                   obscureText: _obscurePassword,
                   controller: _passwordController,
                   prefixIcon: Icons.lock_outlined,
                   suffixIcon: _obscurePassword
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
                   onSuffixIconTap: () 
                   {
                     setState(() => _obscurePassword = !_obscurePassword);
@@ -138,12 +141,14 @@ class _RegisterPageState extends State<RegisterPage>
                     return null;
                   },
                 ),
+
                 const SizedBox(height: 12),
 
                 // Campo de confirmar contraseña
                 CustomTextField(
                   label: 'Confirmar contraseña',
                   hint: '••••••••',
+                  hasInfo: true,
                   controller: _passwordController1,
                   prefixIcon: Icons.lock_outlined,
                   suffixIcon: _obscurePassword1
@@ -154,7 +159,6 @@ class _RegisterPageState extends State<RegisterPage>
                     setState(() {_obscurePassword1 = !_obscurePassword1;});
                   },
                   obscureText: _obscurePassword1,
-
 
                   validator: (value) 
                   {
