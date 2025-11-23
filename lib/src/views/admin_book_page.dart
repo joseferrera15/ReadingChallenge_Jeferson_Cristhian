@@ -97,7 +97,7 @@ class _AdminTodoPageState extends State<AdminBookPage>
                 SizedBox(
                   width: 400, // Personaliza el ancho
                   height: 300, // Personaliza el alto
-                  child: _image != null?Image.file(_image!):
+                  child: _image != null ? Image.file(_image!):
                    Image(
                     image: NetworkImage("https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg"),
                     fit: BoxFit.cover, // Ajusta la imagen al espacio
@@ -216,6 +216,7 @@ class _AdminTodoPageState extends State<AdminBookPage>
         backgroundColor: Colors.blue[300],
         onPressed: () async 
         {
+          print(_image?.path);
           if (titleController.text.isEmpty) 
           {
             // ScaffoldMessenger.of(context).showSnackBar(
@@ -271,7 +272,7 @@ class _AdminTodoPageState extends State<AdminBookPage>
           {
             'title': titleController.text,
             'author': autorController.text,
-            'cover': _image?.path,
+            'cover': _image?.path ?? "maestria_cover.webp",
             'status': 'Pendiente',
             'currentPage': int.parse(paginasLeidasController.text),
             'totalPages': int.parse(paginasTotalesController.text),

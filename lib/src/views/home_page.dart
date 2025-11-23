@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:proyecto_final/src/providers/book_provider.dart';
 import 'package:proyecto_final/src/models/book.dart';
 import 'package:proyecto_final/src/widgets/LinearProgress.dart';
-import 'package:proyecto_final/src/widgets/item_list.dart';
+import 'package:proyecto_final/src/shared/utils.dart';
 
 class HomePage extends StatefulWidget 
 {
@@ -163,9 +163,6 @@ class _HomePageState extends State<HomePage>
           {
             return Center(child: CircularProgressIndicator());
           }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No hay libros registrados aún.'));
-          }
           if (snapshot.hasError) 
           {
             return Center(child: Text('Error: ${snapshot.error.toString()}'));
@@ -176,23 +173,40 @@ class _HomePageState extends State<HomePage>
           return GridView.count
           (
             crossAxisCount: 2,
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(12.0),
             crossAxisSpacing: 10.0,
             mainAxisSpacing: 10.0,
 
-            children: List.generate(books.length, (index)
+            children: 
+            [
+              // En caso de que no ha llegado al limite de 12 o no hay datos en el home, se activara el widget de agregar
+              if(books.length < 12 || !snapshot.hasData || snapshot.data!.isEmpty) 
+                GestureDetector 
+                (
+                  onTap: () => context.push("/home/create"), 
+                  child: Card(
+                    elevation: 3,
+                    color: const Color.fromARGB(255, 233, 227, 227),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Icon(Icons.add_rounded, size: 100,  color: Colors.green,),
+                  )
+                ),
+            
+            ...List.generate(books.length, (index)
             {
+
               return GestureDetector
               (
                 onTap: () 
                 {
+                  // Aqui se mostrara la ventana para empezar a leer
                   context.pushNamed(
                     'update-book',
                     pathParameters: {'id': books[index].id},
                     extra: books[index].toJson(),
                   );
-                  // Acción al tocar la tarjeta
-                  // 1. Navegar a la pagina de detalles del libro y mostrar el cronometro
                 },
                 child: Card
                 (
@@ -204,23 +218,86 @@ class _HomePageState extends State<HomePage>
                   (
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
+
                     children: 
                     [
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Image.file(File(books[index].coverImage), width: 100, height: 100,),
-                          IconButton(onPressed: () {}, icon: Icon(Icons.more_vert_rounded))
+                        children: 
+                        [
+                          FutureBuilder<bool>(
+                            future: File(books[index].coverImage).exists(),
+                            builder: (context, snapshot)
+                            {
+                              if (snapshot.data == true) 
+                              {
+                                return Image.file(File(books[index].coverImage), width: 100, height: 100,);
+                              }
+                              else
+                              {
+                                return Image(
+                                  image: NetworkImage("https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg"),
+                                  width: 110,
+                                  //fit: BoxFit.none, // Ajusta la imagen al espacio
+                                );
+                              }
+                            },
+                          ),
+                          
+                          PopupMenuButton<String>
+                          (
+                            onSelected: (value) 
+                            {
+                              switch (value) 
+                              {
+                                case 'Update':
+                                  context.pushNamed(
+                                    'update-book', 
+                                    pathParameters: {'id': books[index].id},
+                                    extra: books[index].toJson()
+                                  );
+                                  break;
+                                case 'Start':
+                                  
+                                  break;
+                                case 'Delete':
+                                  Utils.showConfirm(
+                                    context: context,
+                                    confirmButton: ()
+                                    {
+                                    FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(user?.uid)
+                                    .collection('books')
+                                    .doc(books[index].id)
+                                    .delete();
+
+                                    if (!context.mounted) return;
+
+                                    context.pop(books.remove(books[index]));
+                                    }
+                                  );
+                                  break;
+                                default: return;
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem(value: 'Update', child: Text('Update')),
+                              PopupMenuItem(value: 'Start', child: Text('Start')),
+                              PopupMenuItem(value: 'Delete', child: Text('Delete')),
+                            ],
+                            icon: Icon(Icons.more_vert_rounded)
+                          )
                         ]),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         //mainAxisAlignment: MainAxisAlignment.center,
 
                         children: [
-                          Text('${books[index].title}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                          Text(books[index].title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                           SizedBox(height: 3),
-                          Text('${books[index].author}', style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                          Text(books[index].author, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
 
                           Row(
                             children: [
@@ -229,15 +306,17 @@ class _HomePageState extends State<HomePage>
                               
                               Column
                               (
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: 
                                 [
-                                  Text('${books[index].currentPage}/${books[index].totalPages}'),
-                                  LinearProgres(value: 220, min: 1, width: 80, heightBar: 1),
+                                  //Text('${books[index].currentPage}/${books[index].totalPages}'), // Con paginas y total de paginas
+                                  LinearProgres(value: (books[index].currentPage/books[index].totalPages), min: 4, width: 80, heightBar: 3),
+                                  Text('${((books[index].currentPage/books[index].totalPages)*100).round()}%') // Se trabaja mediante porcentajes
                                 ],
                               )
                             ],
                           ),
-                          
                         ],
                       ),
                     ],
@@ -245,21 +324,9 @@ class _HomePageState extends State<HomePage>
                 ),
               );
             })
-          );
+        ]);
       }),
 
-      floatingActionButton: FloatingActionButton
-      (
-        heroTag: 'tag_admin_book',
-        backgroundColor: Colors.blue[300],
-        onPressed: () 
-        {
-          context.pushNamed('new-book');
-        },
-
-        child: const Icon(Icons.add),
-      ),
-      
       bottomNavigationBar: BottomAppBar
       (
         height: 40,

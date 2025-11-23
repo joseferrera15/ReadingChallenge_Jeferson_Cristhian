@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:proyecto_final/src/models/book.dart';
 import 'package:proyecto_final/src/providers/book_provider.dart';
 
@@ -37,10 +37,10 @@ class ItemList extends StatelessWidget
         {
           final result = await provider.markAsComplete(
             docId: book.id,
-            value: value ?? false,
+            value: value ?? "Pendiente",
           );
         },
       ),
     );
   }
-}
+}*/
