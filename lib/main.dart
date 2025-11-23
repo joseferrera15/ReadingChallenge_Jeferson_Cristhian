@@ -26,7 +26,8 @@ class MainApp extends StatelessWidget
   @override
   Widget build(BuildContext context) 
   {
-    return MaterialApp.router(
+    return MaterialApp.router
+    (
       routerConfig: GoRouter(
         
         redirect: (context, state) 
@@ -37,18 +38,42 @@ class MainApp extends StatelessWidget
 
           if (user == null && !freeRoutes.contains(state.fullPath)) 
           {
-            return '/admin-book';
+            return '/login';
           }
 
           return null;
         },
-        initialLocation: '/stadistics',
+        initialLocation: '/home',
         routes: [
           GoRoute(path: '/login', name: 'login', builder: (context, state) => LoginPage()),
           GoRoute(path: '/register', name: 'register', builder: (context, state) => RegisterPage()),
-          GoRoute(path: '/home', name: 'home', builder: (context, state) => HomePage()),
+          GoRoute(
+            path: '/home', 
+            name: 'home', 
+            builder: (state, context) => HomePage(),
+
+            routes: 
+            [
+              GoRoute(
+                path: '/create',
+                name: 'new-book',
+                builder: (context, state) => AdminBookPage(),
+              ),
+                GoRoute(
+                  path: '/:id',
+                  name: 'update-book',
+
+                  builder: (context, state) 
+                  {
+                    print(state.pathParameters);
+                    final book = state.extra as Map<String, dynamic>;
+
+                    return AdminBookPage(book: book);
+                  },
+                ),
+            ],
+          ),
           GoRoute(path: '/stadistics', name: 'statistics', builder: (context, state) => Stadistics()),
-          GoRoute(path: '/admin-book', name: 'admin-book', builder: (context, state) => AdminTodoPage()),
         ]
       ),
       debugShowCheckedModeBanner: false,

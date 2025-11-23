@@ -23,13 +23,16 @@ class BookProvider
     return books;
   }
 
-  Stream<List<Book>> getAllBooksStream() {
+  Stream<List<Book>> getAllBooksStream() 
+  {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
     final db = FirebaseFirestore.instance;
+
     final collectionRefBooks = db
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser?.uid)
-        .collection('books')
-        .limit(12);
+    .collection('users')
+    .doc(userId)
+    .collection('books') 
+    .limit(12);
 
     final snapshotBooks = collectionRefBooks.snapshots();
 
@@ -44,14 +47,17 @@ class BookProvider
     return books;
   }
 
-  Future<void> saveBook(Map<String, dynamic> book) async {
+  Future<void> saveBook(Map<String, dynamic> book) async 
+  {
     final db = FirebaseFirestore.instance;
+    final user = FirebaseAuth.instance;
 
-    final collectionRefBooks = db.collection('books');
+    final collectionRefBooks = db.collection('users')
+    .doc(user.currentUser?.uid)
+    .collection('books');
 
     await collectionRefBooks.add(book);
-
-    // return Todo.fromJson({'id': newTodo.id, ...todo});
+    //return Book.fromJson({'id': newBook.id, ...book});
   }
 
   Future<bool> markAsComplete({
@@ -61,7 +67,7 @@ class BookProvider
     try {
       final db = FirebaseFirestore.instance;
 
-      final docRef = db.collection('todos').doc(docId);
+      final docRef = db.collection('books').doc(docId);
 
       await docRef.update({'completed': value});
       return true;

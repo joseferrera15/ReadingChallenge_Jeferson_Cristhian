@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/custom_text_field.dart';
-import 'package:proyecto_final/src/providers/auth.dart';
-//import 'package:proyecto_final/src/views/login_page.dart';
-//import 'package:proyecto_final/src/shared/utils.dart';
-//import 'package:google_sign_in/google_sign_in.dart';
 
 class RegisterPage extends StatefulWidget 
 {
@@ -31,7 +27,6 @@ class _RegisterPageState extends State<RegisterPage>
     _passwordController.dispose();
     super.dispose();
   }
-
 /*
   Future<User?> registerWithEmailAndPassword(String email, String password, String displayName) async 
   {
@@ -73,7 +68,6 @@ class _RegisterPageState extends State<RegisterPage>
     }
   }
 */
-
 
   @override
   Widget build(BuildContext context) 
@@ -182,7 +176,7 @@ class _RegisterPageState extends State<RegisterPage>
                   child: ElevatedButton(
                     onPressed: () 
                     {
-                      AuthProvider().createUserWithEmailAndPassword(_emailController.text, _passwordController.text);
+                      //AuthProvider().createUserWithEmailAndPassword(_emailController.text, _passwordController.text);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 46, 106, 235),
