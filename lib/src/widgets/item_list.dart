@@ -33,13 +33,14 @@ class ItemList extends StatelessWidget
         checkColor: Colors.blue,
         activeColor: Colors.blue[100],
         value: book.status == 'Finalizado',
-        onChanged: (value) async {
-
-/*
+        onChanged: (value) async 
+        {
           final result = await provider.markAsComplete(
             docId: book.id,
             value: value ?? false,
-          );*/
+          );
+          // if (result)
+          // todo.completed = value ?? false;
         },
       ),
     );

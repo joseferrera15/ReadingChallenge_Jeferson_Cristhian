@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -76,29 +74,6 @@ class MainApp extends StatelessWidget
             ],
           ),
           GoRoute(path: '/stadistics', name: 'statistics', builder: (context, state) => Stadistics()),
-          
-          
-          /*
-          GoRoute(
-            path: '/admin-book', 
-            name: 'admin-book', 
-            builder: (context, state) => AdminBookPage(),
-            
-            routes: 
-            [
-              GoRoute(
-                path: '/:id',
-                name: 'update-book',
-
-                builder: (context, state) 
-                {
-                  final book = state.extra as Map<String, dynamic>;
-
-                  return AdminBookPage(book: book);
-                },
-              ),
-            ],
-          ),*/
         ]
       ),
       debugShowCheckedModeBanner: false,

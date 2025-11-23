@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +33,7 @@ class _AdminTodoPageState extends State<AdminBookPage>
   //image picker
   final _picker = ImagePicker();
 
-  pickImage() async
+  pickImage()async
   {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) 
@@ -51,7 +50,6 @@ class _AdminTodoPageState extends State<AdminBookPage>
   {
     //Id que me permite consultar a la BBDD la información actualizada
     final bookId = GoRouterState.of(context).pathParameters['id'];
-
     //Lista de Estados
     final List<String>_listEstado = ['Pendiente', 'Finalizado','En progreso'];
     String? _selectedEstado;
@@ -99,7 +97,7 @@ class _AdminTodoPageState extends State<AdminBookPage>
                 SizedBox(
                   width: 400, // Personaliza el ancho
                   height: 300, // Personaliza el alto
-                  child: _image != null ? Image.file(_image!):
+                  child: _image != null?Image.file(_image!):
                    Image(
                     image: NetworkImage("https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg"),
                     fit: BoxFit.cover, // Ajusta la imagen al espacio
@@ -325,5 +323,5 @@ class _AdminTodoPageState extends State<AdminBookPage>
         child: Icon(Icons.add, color: Colors.blue[50]),
       ),
     );
-  }
+    }
 }
