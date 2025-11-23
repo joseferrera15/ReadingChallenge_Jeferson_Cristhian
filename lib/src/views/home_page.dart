@@ -163,9 +163,6 @@ class _HomePageState extends State<HomePage>
           {
             return Center(child: CircularProgressIndicator());
           }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No hay libros registrados aún.'));
-          }
           if (snapshot.hasError) 
           {
             return Center(child: Text('Error: ${snapshot.error.toString()}'));
@@ -176,24 +173,26 @@ class _HomePageState extends State<HomePage>
           return GridView.count
           (
             crossAxisCount: 2,
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(12.0),
             crossAxisSpacing: 10.0,
             mainAxisSpacing: 10.0,
 
-            children: [
-            if(books.length < 12) 
-              GestureDetector 
-              (
-                onTap: () => context.push("/home/create"), 
-                child: Card(
-                  elevation: 3,
-                  color: const Color.fromARGB(255, 233, 227, 227),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Icon(Icons.add_rounded, size: 100,  color: Colors.green,),
-                )
-              ),
+            children: 
+            [
+              // En caso de que no ha llegado al limite de 12 o no hay datos en el home, se activara el widget de agregar
+              if(books.length < 12 || !snapshot.hasData || snapshot.data!.isEmpty) 
+                GestureDetector 
+                (
+                  onTap: () => context.push("/home/create"), 
+                  child: Card(
+                    elevation: 3,
+                    color: const Color.fromARGB(255, 233, 227, 227),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Icon(Icons.add_rounded, size: 100,  color: Colors.green,),
+                  )
+                ),
             
             ...List.generate(books.length, (index)
             {
