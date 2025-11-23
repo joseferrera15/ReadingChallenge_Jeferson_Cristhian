@@ -59,18 +59,17 @@ class MainApp extends StatelessWidget
                 name: 'new-book',
                 builder: (context, state) => AdminBookPage(),
               ),
-                GoRoute(
+              GoRoute(
                   path: '/:id',
                   name: 'update-book',
 
-                  builder: (context, state) 
-                  {
-                    print(state.pathParameters);
-                    final book = state.extra as Map<String, dynamic>;
+                builder: (context, state) 
+                {
+                  final book = state.extra as Map<String, dynamic>;
 
-                    return AdminBookPage(book: book);
-                  },
-                ),
+                  return AdminBookPage(book: book);
+                },
+              ),
             ],
           ),
           GoRoute(path: '/stadistics', name: 'statistics', builder: (context, state) => Stadistics()),

@@ -172,7 +172,6 @@ class _HomePageState extends State<HomePage>
           }
 
           final List<Book> books = snapshot.data!;
-          print(books);
 
           return GridView.count
           (
@@ -181,79 +180,6 @@ class _HomePageState extends State<HomePage>
             crossAxisSpacing: 10.0,
             mainAxisSpacing: 10.0,
 
-            children: 
-            [
-              ListView.builder(
-                itemCount: books.length,
-                itemBuilder: (BuildContext context, int index)
-                {
-                  return GestureDetector
-                  (
-                    onTap: () 
-                    {
-                      context.pushNamed(
-                        'update-book',
-                        pathParameters: {'id': books[index].id},
-                        extra: books[index].toJson(),
-                      );
-                      // Acción al tocar la tarjeta
-                      // 1. Navegar a la pagina de detalles del libro y mostrar el cronometro
-                    },
-                    child: Card
-                    (
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Column
-                      (
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: 
-                        [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Image.file(File(books[index].coverImage), width: 80, height: 80),
-                              //Image(image: Image(image: books[index].coverImage), width: 80, height: 80,),
-                              IconButton(onPressed: () {}, icon: Icon(Icons.more_vert_rounded))
-                            ]),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            //mainAxisAlignment: MainAxisAlignment.center,
-
-                            children: [
-                              Text('${books[index].title}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                              SizedBox(height: 3),
-                              Text('${books[index].author}', style: TextStyle(fontSize: 14, color: Colors.grey[600])),
-
-                              Row(
-                                children: [
-                                  Text('Progress'),
-                                  SizedBox(width: 20),
-                                  
-                                  Column
-                                  (
-                                    children: 
-                                    [
-                                      Text('${books[index].currentPage}/${books[index].totalPages}'),
-                                      LinearProgres(value: 220, min: 1, width: 80, heightBar: 1),
-                                    ],
-                                  )
-                                ],
-                              ),
-                              
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              )
-            ],
-/*
             children: List.generate(books.length, (index)
             {
               return GestureDetector
@@ -263,7 +189,7 @@ class _HomePageState extends State<HomePage>
                   context.pushNamed(
                     'update-book',
                     pathParameters: {'id': books[index].id},
-                    extra: books[index],
+                    extra: books[index].toJson(),
                   );
                   // Acción al tocar la tarjeta
                   // 1. Navegar a la pagina de detalles del libro y mostrar el cronometro
@@ -284,7 +210,7 @@ class _HomePageState extends State<HomePage>
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Image(image: AssetImage('assets/maestria_cover.webp'), width: 80, height: 80,),
+                          Image.file(File(books[index].coverImage), width: 100, height: 100,),
                           IconButton(onPressed: () {}, icon: Icon(Icons.more_vert_rounded))
                         ]),
                       Column(
@@ -318,7 +244,7 @@ class _HomePageState extends State<HomePage>
                   ),
                 ),
               );
-            })*/
+            })
           );
       }),
 
