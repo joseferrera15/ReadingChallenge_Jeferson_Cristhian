@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:proyecto_final/src/providers/auth.dart';
 import '../widgets/custom_text_field.dart';
 
 class RegisterPage extends StatefulWidget 
@@ -180,7 +181,8 @@ class _RegisterPageState extends State<RegisterPage>
                   child: ElevatedButton(
                     onPressed: () 
                     {
-                      //AuthProvider().createUserWithEmailAndPassword(_emailController.text, _passwordController.text);
+                      AuthProvider auth = AuthProvider();
+                      auth.createUserWithEmailAndPassword(context, _emailController.text, _passwordController.text);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 46, 106, 235),
@@ -246,7 +248,9 @@ class _RegisterPageState extends State<RegisterPage>
                   child: OutlinedButton(
                     onPressed: () async 
                     {
+                      final user = await AuthProvider().handleGoogleSignIn(context);
 
+                      context.go('/home');
                     },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(

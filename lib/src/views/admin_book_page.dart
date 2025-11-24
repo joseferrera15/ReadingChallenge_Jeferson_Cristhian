@@ -97,12 +97,15 @@ class _AdminTodoPageState extends State<AdminBookPage>
                 SizedBox(
                   width: 400, // Personaliza el ancho
                   height: 300, // Personaliza el alto
-                  child: _image != null ? Image.file(_image!):
-                   Image(
-                    image: NetworkImage("https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg"),
-                    fit: BoxFit.cover, // Ajusta la imagen al espacio
+                  child: 
+                  _image != null ? Image.file(_image!, errorBuilder: (context, error, stackTrace) => Image(
+                        image: NetworkImage("https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg"),
+                        fit: BoxFit.cover)) : Image(
+                      image: NetworkImage("https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg"),
+                      fit: BoxFit.cover)
+                     // Ajusta la imagen al espacio
                   ),
-                ),
+                
                 Positioned(
                   bottom: 10,
                   left: 150,
@@ -272,7 +275,7 @@ class _AdminTodoPageState extends State<AdminBookPage>
           {
             'title': titleController.text,
             'author': autorController.text,
-            'cover': _image?.path ?? "maestria_cover.webp",
+            'cover': _image?.path ?? "https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg",
             'status': 'Pendiente',
             'currentPage': int.parse(paginasLeidasController.text),
             'totalPages': int.parse(paginasTotalesController.text),

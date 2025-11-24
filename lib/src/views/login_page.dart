@@ -123,7 +123,8 @@ class _LoginPageState extends State<LoginPage>
                   (
                     onPressed: () 
                     {
-                      //final user = AuthProvider().signInWithEmailAndPassword(_emailController.text, _passwordController.text);
+                      final AuthProvider auth = AuthProvider();
+                      auth.signInWithEmailAndPassword(_emailController.text, _passwordController.text, context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 46, 106, 235),
@@ -189,7 +190,7 @@ class _LoginPageState extends State<LoginPage>
                   child: OutlinedButton(
                     onPressed: () async 
                     {
-                      final user = await AuthProvider().handleGoogleSignIn();
+                      final user = await AuthProvider().handleGoogleSignIn(context);
 
                       context.go('/home');
                       /*if (user != null && context.mounted) 

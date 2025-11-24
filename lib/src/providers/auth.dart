@@ -1,14 +1,15 @@
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AuthProvider 
 {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> createUserWithEmailAndPassword(String email, String password) async 
+  Future<void> createUserWithEmailAndPassword(BuildContext context, String email, String password) async 
   {
     try 
     {
@@ -17,14 +18,14 @@ class AuthProvider
         password: password,
       );
     
-      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!);
+      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!, context, password);
     } catch (e) 
     {
       print("Error en iniciar sesion por correo: $e");
     }
   }
-/*
-  Future<void> signInWithEmailAndPassword(String email, String password) async 
+
+  Future<void> signInWithEmailAndPassword(String email, String password, context) async 
   {
     try 
     {
@@ -33,14 +34,14 @@ class AuthProvider
         password: password,
       );
     
-      await _checkAndCreateUserDocument(userCredential.user!);
+      await _checkAndCreateUserDocument(userCredential.user!, context, password);
     } catch (e) 
     {
       print("Error en iniciar sesion por correo: $e");
     }
   }
-*/
-  Future<AuthCredential?> handleGoogleSignIn() async 
+
+  Future<void> handleGoogleSignIn(BuildContext context) async 
   {
     try
     {
@@ -52,7 +53,7 @@ class AuthProvider
       final GoogleSignInAccount googleAuth = await signIn.authenticate();
 
       // Obtenemos el id token
-      final GoogleSignInAuthentication auth = await googleAuth.authentication;
+      final GoogleSignInAuthentication auth = googleAuth.authentication;
       String? idToken = auth.idToken;
 
 
@@ -62,14 +63,14 @@ class AuthProvider
       );
 
       await FirebaseAuth.instance.signInWithCredential(credential);
-      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!);
+      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!, context, null);
     } catch (e) 
     {
       print("Error en Google Sign-In: $e");
     }
   }
 
-  Future<void> _checkAndCreateUserDocument(User user) async 
+  Future<void> _checkAndCreateUserDocument(User user, BuildContext context, String? password) async 
   {
     final userDoc = _firestore.collection('users').doc(user.uid);
     
@@ -78,15 +79,31 @@ class AuthProvider
     if (!docSnapshot.exists) 
     {
       // Crear nuevo documento si no existe
-      await userDoc.set({
-        'uid': user.uid,
-        'email': user.email,
-        'displayName': user.displayName ?? '',
-        'photoURL': user.photoURL ?? '',
-        'provider': user.providerData[0].providerId,
-        'createdAt': FieldValue.serverTimestamp(),
-        'lastLogin': FieldValue.serverTimestamp(),
-      });
+      if (user.providerData.first != "google.com") 
+      {
+        await userDoc.set({
+          'uid': user.uid,
+          'email': user.email,
+          'password': password,
+          'displayName': user.displayName ?? '',
+          'photoURL': user.photoURL ?? '',
+          'provider': user.providerData[0].providerId,
+          'createdAt': FieldValue.serverTimestamp(),
+          'lastLogin': FieldValue.serverTimestamp(),
+        });
+      }
+      else
+      {
+        await userDoc.set({
+          'uid': user.uid,
+          'email': user.email,
+          'displayName': user.displayName ?? '',
+          'photoURL': user.photoURL ?? '',
+          'provider': user.providerData[0].providerId,
+          'createdAt': FieldValue.serverTimestamp(),
+          'lastLogin': FieldValue.serverTimestamp(),
+        });
+      }
     } else 
     {
       // Actualizar último login si ya existe
@@ -94,5 +111,7 @@ class AuthProvider
         'lastLogin': FieldValue.serverTimestamp(),
       });
     }
+
+    context.go('/home');
   }
 }
