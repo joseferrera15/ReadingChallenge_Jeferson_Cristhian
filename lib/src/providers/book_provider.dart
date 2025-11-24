@@ -1,9 +1,41 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:proyecto_final/src/models/book.dart';
+import 'package:flutter/foundation.dart';
 
-class BookProvider 
+class BookProvider with ChangeNotifier 
 {
+  Stream<QuerySnapshot<Map<String, dynamic>>>? _booksStream;
+  Stream<QuerySnapshot<Map<String, dynamic>>>? get booksStream => _booksStream;
+  
+  Stream getAllBooksStreamWithCondition(query)
+  {
+    //print('=== CONSULTA RECIBIDA EN PROVIDER ===');
+    //print('Tipo de query: ${query.runtimeType}');
+    print('Query completa: ${query.runtimeType}');
+    
+    //_booksStream = query.snapshots();
+    //notifyListeners();
+
+    final snapshotBooks = query.snapshots();
+
+    final books = snapshotBooks.map((snapshot) 
+    {
+      return snapshot.docs.map((book) 
+      {
+        return Book.fromJson({'id': book.id, ...book.data()});
+      }).toList();
+    });
+
+    return books;
+  }
+  
+  void clearBooksStream() 
+  {
+    _booksStream = null;
+    notifyListeners();
+  }
+
   Future<List<Book>> getAllBooks() async
   {
     final db = FirebaseFirestore.instance;
@@ -33,26 +65,6 @@ class BookProvider
     .doc(userId)
     .collection('books')
     .limit(12);
-
-    final snapshotBooks = collectionRefBooks.snapshots();
-
-    final books = snapshotBooks.map((snapshot) 
-    {
-      return snapshot.docs.map((book) 
-      {
-        return Book.fromJson({'id': book.id, ...book.data()});
-      }).toList();
-    });
-
-    return books;
-  }
-
-  Stream<List<Book>> getAllBooksStreamWithCondition(dbs) 
-  {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    //final db = FirebaseFirestore.instance;
-
-    final collectionRefBooks = dbs;
 
     final snapshotBooks = collectionRefBooks.snapshots();
 

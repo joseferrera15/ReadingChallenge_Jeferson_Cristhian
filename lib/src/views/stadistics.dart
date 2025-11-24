@@ -68,12 +68,14 @@ class _StadisticsState extends State<Stadistics>
                       switch (value) 
                       {
                         case 'All':
+                          print("Consulta todos");
                           final db = FirebaseFirestore.instance;
 
-                          bookProvider.getAllBooksStreamWithCondition(
-                          db.collection('users')
+                          final myQuery = db.collection('users')
                           .doc(user?.uid)
-                          .collection('books'));
+                          .collection('books');
+
+                          bookProvider.getAllBooksStreamWithCondition(myQuery);
                           
                           break;
                         case 'Pending':
@@ -108,7 +110,15 @@ class _StadisticsState extends State<Stadistics>
                           
                           break;
 
-                        default: return;
+                        default: 
+                          final db = FirebaseFirestore.instance;
+
+                          Query<Map<String, dynamic>> defaultQuery = db.collection('users')
+                          .doc(user?.uid)
+                          .collection('books');
+    
+                          bookProvider.getAllBooksStreamWithCondition(defaultQuery);
+                        break;
                       }
                     },
                     itemBuilder: (context) => 
@@ -129,34 +139,39 @@ class _StadisticsState extends State<Stadistics>
         ),
       ),
 
-      body: StreamBuilder
+      body: StreamBuilder<QuerySnapshot>
       (
-        stream: bookProvider.getAllBooksStream(), 
+        stream: bookProvider.booksStream, 
         builder: (context, snapshot)
         {
           if (snapshot.connectionState == ConnectionState.waiting) 
           {
             return Center(child: CircularProgressIndicator());
           }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) 
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) 
           {
-            return Text('!data');
+            return Text('!data, Number of documents: ${snapshot.data?.docs.length}, Documents: ${snapshot.data?.docs.map((doc) => doc.data()).toList()}');
           }
           if (snapshot.hasError) 
           {
             return Center(child: Text('Error: ${snapshot.error.toString()}'));
           }
 
-          final List<Book> books = snapshot.data!;
+          print('Number of documents: ${snapshot.data!.docs.length}');
+          print('Documents: ${snapshot.data!.docs.map((doc) => doc.data()).toList()}');
+
+          List<QueryDocumentSnapshot> books = snapshot.data!.docs;
+          //final List<Book> books = snapshot.data!;
 
           return ListView.builder
           (
             itemCount: books.length,
             itemBuilder: (BuildContext context, index)
             {
+              final book = books[index];
               return ExpansionTile
               (
-                title: Title(color: Colors.amberAccent, child: Text(books[index].title)),
+                title: Title(color: Colors.amberAccent, child: Text(book['title'])),
 
                 children: 
                 [
