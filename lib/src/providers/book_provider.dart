@@ -138,24 +138,30 @@ Future<Map<String, dynamic>> getUserStats() async {
 }
 
 //actualizar paginas leidas
-Future<bool> updateCurrentPage({required String bookId, required int currentPage}) async {
-  try {
+Future<bool> updateCurrentPage({required String bookId, required int currentPage}) async 
+{
+  try 
+  {
     final db = FirebaseFirestore.instance;
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) return false;
 
     final docRef = db.collection('users')
-        .doc(user.uid)
-        .collection('books')
-        .doc(bookId);
+    .doc(user.uid)
+    .collection('books')
+    .doc(bookId);
 
     await docRef.update({
       'currentPage': currentPage,
       'lastUpdated': FieldValue.serverTimestamp(),
     });
+
+    print(docRef.get());
+
     return true;
-  } catch (e) {
+  } catch (e) 
+  {
     print('Error updating current page: $e');
     return false;
   }
