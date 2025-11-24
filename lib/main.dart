@@ -44,7 +44,7 @@ class MainApp extends StatelessWidget
 
           return null;
         },
-        initialLocation: '/home',
+        initialLocation: '/start',
         routes: [
           GoRoute(path: '/login', name: 'login', builder: (context, state) => LoginPage()),
           GoRoute(path: '/register', name: 'register', builder: (context, state) => RegisterPage()),
