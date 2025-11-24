@@ -98,4 +98,30 @@ class BookProvider
       return false;
     }
   }
+
+
+  // estadisticas realess
+Future<Map<String, dynamic>> getUserStats() async {
+  final userId = FirebaseAuth.instance.currentUser?.uid;
+  if (userId == null) return {'totalBooks': 0, 'totalPages': 0, 'daysStreak': 15};
+  
+  final db = FirebaseFirestore.instance;
+  final userBooksRef = db.collection('users').doc(userId).collection('books');
+  
+  final snapshot = await userBooksRef.get();
+  
+  int totalBooks = snapshot.docs.length;
+  int totalPages = 0;
+  
+  for (var doc in snapshot.docs) {
+    final data = doc.data();
+    totalPages += (data['totalPages'] as int? ?? 0);
+  }
+  
+  return {
+    'totalBooks': totalBooks,
+    'totalPages': totalPages,
+    'daysStreak': 15, // el unico generico (por ahora)
+  };
+}
 }

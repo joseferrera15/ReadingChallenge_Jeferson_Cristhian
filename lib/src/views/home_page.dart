@@ -86,7 +86,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: Column(
                   children: [
-                    // Avatar y info
+                    
                     Row(
                       children: [
                         Container(
@@ -116,10 +116,7 @@ class _HomePageState extends State<HomePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                FirebaseAuth
-                                        .instance
-                                        .currentUser
-                                        ?.displayName ??
+                                FirebaseAuth.instance.currentUser?.displayName ??
                                     'Lector Premium',
                                 style: TextStyle(
                                   fontSize: 18,
@@ -173,42 +170,54 @@ class _HomePageState extends State<HomePage> {
                     ),
                     SizedBox(height: 20),
 
-                    // est elegantees, puee
-                    Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.3),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _buildStatCircle(
-                            '5',
-                            'Libros',
-                            Icons.menu_book_rounded,
+                    // datos realess
+                    FutureBuilder<Map<String, dynamic>>(
+                      future: bookProvider.getUserStats(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Container(
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.white.withOpacity(0.3)),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                _buildStatCircle('...', 'Libros', Icons.menu_book_rounded),
+                                _buildStatCircle('...', 'Págs.', Icons.auto_stories_rounded),
+                                _buildStatCircle('15', 'Días', Icons.local_fire_department_rounded),
+                              ],
+                            ),
+                          );
+                        }
+
+                        final stats = snapshot.data ?? {'totalBooks': 0, 'totalPages': 0, 'daysStreak': 15};
+                        
+                        return Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.white.withOpacity(0.3)),
                           ),
-                          _buildStatCircle(
-                            '1.2K',
-                            'Págs.',
-                            Icons.auto_stories_rounded,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildStatCircle('${stats['totalBooks']}', 'Libros', Icons.menu_book_rounded),
+                              _buildStatCircle('${stats['totalPages']}', 'Págs.', Icons.auto_stories_rounded),
+                              _buildStatCircle('${stats['daysStreak']}', 'Días', Icons.local_fire_department_rounded),
+                            ],
                           ),
-                          _buildStatCircle(
-                            '15',
-                            'Días',
-                            Icons.local_fire_department_rounded,
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                   ],
                 ),
               ),
 
-              // el menu principalll
+              // 
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 20),
@@ -225,7 +234,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       SizedBox(height: 15),
 
-                      //Ú
+                      // ITEMS DEL MENÚ
                       Expanded(
                         child: ListView(
                           padding: EdgeInsets.zero,
@@ -295,16 +304,14 @@ class _HomePageState extends State<HomePage> {
                               title: 'Acerca de mi',
                               onTap: () {
                                 Navigator.pop(context);
-                                context.push(
-                                  '/about',
-                                ); /
+                                context.push('/about');
                               },
                             ),
                           ],
                         ),
                       ),
 
-                      // cerra sesion
+                      // CERRAR SESIÓN
                       Padding(
                         padding: EdgeInsets.all(20),
                         child: Container(
@@ -374,12 +381,9 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(12.0),
             crossAxisSpacing: 10.0,
             mainAxisSpacing: 10.0,
-
             children: [
-              // En caso de que no ha llegado al limite de 12 o no hay datos en el home, se activara el widget de agregar
-              if (books.length < 12 ||
-                  !snapshot.hasData ||
-                  snapshot.data!.isEmpty)
+              // 12 maximo
+              if (books.length < 12 || !snapshot.hasData || snapshot.data!.isEmpty)
                 GestureDetector(
                   onTap: () => context.push("/home/create"),
                   child: Card(
@@ -399,7 +403,6 @@ class _HomePageState extends State<HomePage> {
               ...List.generate(books.length, (index) {
                 return GestureDetector(
                   onTap: () {
-                    // Aqui se mostrara la ventana para empezar a leer
                     context.pushNamed(
                       'update-book',
                       pathParameters: {'id': books[index].id},
@@ -414,82 +417,99 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
-
                       children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            FutureBuilder<bool>(
-                              future: File(books[index].coverImage).exists(),
-                              builder: (context, snapshot) {
-                                if (snapshot.data == true) {
-                                  return Image.file(
-                                    File(books[index].coverImage),
-                                    width: 100,
-                                    height: 100,
-                                  );
-                                } else {
-                                  return Image(
-                                    image: NetworkImage(
-                                      "https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg",
-                                    ),
-                                    width: 110,
-                                  );
-                                }
-                              },
-                            ),
-
-                            PopupMenuButton<String>(
-                              onSelected: (value) {
-                                switch (value) {
-                                  case 'Update':
-                                    context.pushNamed(
-                                      'update-book',
-                                      pathParameters: {'id': books[index].id},
-                                      extra: books[index].toJson(),
+                        SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              // IMAGEN DEL LIBRO
+                              FutureBuilder<bool>(
+                                future: File(books[index].coverImage).exists(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.data == true) {
+                                    return Image.file(
+                                      File(books[index].coverImage),
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover,
                                     );
-                                    break;
-                                  case 'Start':
-                                    break;
-                                  case 'Delete':
-                                    Utils.showConfirm(
-                                      context: context,
-                                      confirmButton: () {
-                                        FirebaseFirestore.instance
-                                            .collection('users')
-                                            .doc(user?.uid)
-                                            .collection('books')
-                                            .doc(books[index].id)
-                                            .delete();
-
-                                        if (!context.mounted) return;
-
-                                        context.pop(books.remove(books[index]));
-                                      },
+                                  } else {
+                                    return Image(
+                                      image: NetworkImage(
+                                        "https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg",
+                                      ),
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover,
                                     );
-                                    break;
-                                  default:
-                                    return;
-                                }
-                              },
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  value: 'Update',
-                                  child: Text('Update'),
+                                  }
+                                },
+                              ),
+                              
+                              // BOTÓN EN ESQUINA SUPERIOR DERECHA
+                              Positioned(
+                                top: -8,
+                                right: -12,
+                                child: Container(
+                                  width: 30,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black26,
+                                        blurRadius: 8,
+                                        offset: Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: PopupMenuButton<String>(
+                                    onSelected: (value) {
+                                      switch (value) {
+                                        case 'Update':
+                                          context.pushNamed(
+                                            'update-book',
+                                            pathParameters: {'id': books[index].id},
+                                            extra: books[index].toJson(),
+                                          );
+                                          break;
+                                        case 'Start':
+                                          break;
+                                        case 'Delete':
+                                          Utils.showConfirm(
+                                            context: context,
+                                            confirmButton: () {
+                                              FirebaseFirestore.instance
+                                                  .collection('users')
+                                                  .doc(user?.uid)
+                                                  .collection('books')
+                                                  .doc(books[index].id)
+                                                  .delete();
+
+                                              if (!context.mounted) return;
+                                              context.pop(books.remove(books[index]));
+                                            },
+                                          );
+                                          break;
+                                        default:
+                                          return;
+                                      }
+                                    },
+                                    itemBuilder: (context) => [
+                                      PopupMenuItem(value: 'Update', child: Text('Editar')),
+                                      PopupMenuItem(value: 'Start', child: Text('Comenzar a leer')),
+                                      PopupMenuItem(value: 'Delete', child: Text('Eliminar', style: TextStyle(color: Colors.red))),
+                                    ],
+                                    icon: Icon(Icons.more_vert_rounded, size: 16, color: Colors.black),
+                                    padding: EdgeInsets.zero,
+                                  ),
                                 ),
-                                PopupMenuItem(
-                                  value: 'Start',
-                                  child: Text('Start'),
-                                ),
-                                PopupMenuItem(
-                                  value: 'Delete',
-                                  child: Text('Delete'),
-                                ),
-                              ],
-                              icon: Icon(Icons.more_vert_rounded),
-                            ),
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -509,20 +529,16 @@ class _HomePageState extends State<HomePage> {
                                 color: Colors.grey[600],
                               ),
                             ),
-
                             Row(
                               children: [
                                 Text('Progress'),
                                 SizedBox(width: 20),
-
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     LinearProgres(
-                                      value:
-                                          (books[index].currentPage /
-                                          books[index].totalPages),
+                                      value: (books[index].currentPage / books[index].totalPages),
                                       min: 4,
                                       width: 80,
                                       heightBar: 3,
@@ -552,11 +568,9 @@ class _HomePageState extends State<HomePage> {
         shadowColor: Color(0xFFE5E5E5),
         notchMargin: 0,
         padding: EdgeInsets.all(0),
-
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
-
           children: [
             IconButton(
               onPressed: () {
@@ -568,7 +582,6 @@ class _HomePageState extends State<HomePage> {
                 color: const Color.fromARGB(255, 31, 31, 31),
               ),
             ),
-
             IconButton(
               onPressed: () {
                 context.go('/stadistics');
@@ -622,7 +635,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // metodos para los itemsss
+  // Método para items del menú
   Widget _buildMenuItem({
     required IconData icon,
     required String title,
@@ -686,7 +699,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  //
+  // Diálogo de confirmación para logout
   Future<void> _showLogoutConfirmation(BuildContext context) async {
     return showDialog(
       context: context,
@@ -712,7 +725,7 @@ class _HomePageState extends State<HomePage> {
                 Icon(Icons.logout_rounded, color: Colors.red[600], size: 50),
                 SizedBox(height: 15),
                 Text(
-                  'Cerrar Sesion',
+                  'Cerrar Sesión',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -721,7 +734,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  '¿Estas seguro de que quieres salir?',
+                  '¿Estás seguro de que quieres salir?',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.grey[600]),
                 ),
