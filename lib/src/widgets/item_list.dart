@@ -39,8 +39,6 @@ class ItemList extends StatelessWidget
             docId: book.id,
             value: value ?? "Pendiente",
           );
-          // if (result)
-          // todo.completed = value ?? false;
         },
       ),
     );
