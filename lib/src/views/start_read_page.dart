@@ -52,14 +52,26 @@ class _StartReadPageState extends State<StartReadPage> {
                       'Información del Libro',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
                     Text('Título: ${widget.bookData['title']}'),
                     Text('Autor: ${widget.bookData['author']}'),
                     Text('Páginas: ${widget.bookData['currentPage']} / ${widget.bookData['totalPages']}'),
+                    
+                  
                   ],
                 ),
               ),
             ),
+            SizedBox(height: 30,),
+            FloatingActionButton.extended(onPressed: (){
+
+                    },
+                    label: Text('Registrar Paginas Leidas', style: TextStyle(color: Colors.white),),
+                    backgroundColor: Colors.black,
+                    icon: Icon(Icons.check, color: Colors.white),
+
+                    
+                    )
           ],
         ),
       ),
