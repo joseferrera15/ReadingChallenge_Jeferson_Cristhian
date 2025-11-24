@@ -23,9 +23,26 @@ class _StartReadPage extends State<StartReadPage>
             ),
             body: SingleChildScrollView(
               padding: EdgeInsetsGeometry.symmetric(vertical: 8, horizontal: 16),
-              child: Cronometer(
+              child: Column(
+                children: [
+                  Cronometer(
                 
-              ),
+                     ),
+                  SizedBox(height: 30,),
+                  TextField(
+                    decoration: InputDecoration(
+                      label: Text('Paginas Leidas'),
+                      hint: Text('Eje. Crear opción de eliminar'),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      prefixIcon: Icon(Icons.pages),
+                    ),
+
+                  )
+                ],
+              )
+              
               
             )
           );
@@ -34,35 +51,3 @@ class _StartReadPage extends State<StartReadPage>
 }
 
 
-/*Row(
-                  children: [
-                        SizedBox(height: 16),
-                        Text(
-                          'Iniciar',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 16),
-                        FloatingActionButton(onPressed: (){
-
-                        },
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.green,
-                        child: Icon(Icons.timer),
-                        ),
-                        SizedBox(height: 16, width: 30,),
-                        Text(
-                          'Stop',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 16),
-                        FloatingActionButton(onPressed: (){
-
-                        },
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.red,
-                        child: Icon(Icons.stop),
-                        ),
-                  ]
-                  
-                )*/
-                  
