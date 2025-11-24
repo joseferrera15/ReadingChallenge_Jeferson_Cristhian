@@ -31,8 +31,28 @@ class BookProvider
     final collectionRefBooks = db
     .collection('users')
     .doc(userId)
-    .collection('books') 
+    .collection('books')
     .limit(12);
+
+    final snapshotBooks = collectionRefBooks.snapshots();
+
+    final books = snapshotBooks.map((snapshot) 
+    {
+      return snapshot.docs.map((book) 
+      {
+        return Book.fromJson({'id': book.id, ...book.data()});
+      }).toList();
+    });
+
+    return books;
+  }
+
+  Stream<List<Book>> getAllBooksStreamWithCondition(dbs) 
+  {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    //final db = FirebaseFirestore.instance;
+
+    final collectionRefBooks = dbs;
 
     final snapshotBooks = collectionRefBooks.snapshots();
 
