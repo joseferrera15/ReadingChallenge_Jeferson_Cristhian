@@ -18,14 +18,14 @@ class AuthProvider
         password: password,
       );
     
-      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!, context);
+      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!, context, password);
     } catch (e) 
     {
       print("Error en iniciar sesion por correo: $e");
     }
   }
-/*
-  Future<void> signInWithEmailAndPassword(String email, String password) async 
+
+  Future<void> signInWithEmailAndPassword(String email, String password, context) async 
   {
     try 
     {
@@ -34,20 +34,20 @@ class AuthProvider
         password: password,
       );
     
-      await _checkAndCreateUserDocument(userCredential.user!);
+      await _checkAndCreateUserDocument(userCredential.user!, context, password);
     } catch (e) 
     {
       print("Error en iniciar sesion por correo: $e");
     }
   }
-*/
-  Future<AuthCredential?> handleGoogleSignIn(BuildContext context) async 
+
+  Future<void> handleGoogleSignIn(BuildContext context) async 
   {
     try
     {
       final GoogleSignIn signIn = GoogleSignIn.instance;
 
-      //await signIn.initialize(serverClientId: '1077986394972-ku1lckvvac0scjt4ht3074m9ceb2ntks.apps.googleusercontent.com');
+      await signIn.initialize(serverClientId: '1077986394972-ku1lckvvac0scjt4ht3074m9ceb2ntks.apps.googleusercontent.com');
 
       // Obtain the auth details from the request
       final GoogleSignInAccount googleAuth = await signIn.authenticate();
@@ -63,14 +63,14 @@ class AuthProvider
       );
 
       await FirebaseAuth.instance.signInWithCredential(credential);
-      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!, context);
+      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!, context, null);
     } catch (e) 
     {
       print("Error en Google Sign-In: $e");
     }
   }
 
-  Future<void> _checkAndCreateUserDocument(User user, BuildContext context) async 
+  Future<void> _checkAndCreateUserDocument(User user, BuildContext context, String? password) async 
   {
     final userDoc = _firestore.collection('users').doc(user.uid);
     
@@ -79,15 +79,31 @@ class AuthProvider
     if (!docSnapshot.exists) 
     {
       // Crear nuevo documento si no existe
-      await userDoc.set({
-        'uid': user.uid,
-        'email': user.email,
-        'displayName': user.displayName ?? '',
-        'photoURL': user.photoURL ?? '',
-        'provider': user.providerData[0].providerId,
-        'createdAt': FieldValue.serverTimestamp(),
-        'lastLogin': FieldValue.serverTimestamp(),
-      });
+      if (user.providerData.first != "google.com") 
+      {
+        await userDoc.set({
+          'uid': user.uid,
+          'email': user.email,
+          'password': password,
+          'displayName': user.displayName ?? '',
+          'photoURL': user.photoURL ?? '',
+          'provider': user.providerData[0].providerId,
+          'createdAt': FieldValue.serverTimestamp(),
+          'lastLogin': FieldValue.serverTimestamp(),
+        });
+      }
+      else
+      {
+        await userDoc.set({
+          'uid': user.uid,
+          'email': user.email,
+          'displayName': user.displayName ?? '',
+          'photoURL': user.photoURL ?? '',
+          'provider': user.providerData[0].providerId,
+          'createdAt': FieldValue.serverTimestamp(),
+          'lastLogin': FieldValue.serverTimestamp(),
+        });
+      }
     } else 
     {
       // Actualizar último login si ya existe

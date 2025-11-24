@@ -124,7 +124,7 @@ class _LoginPageState extends State<LoginPage>
                     onPressed: () 
                     {
                       final AuthProvider auth = AuthProvider();
-                      auth.createUserWithEmailAndPassword(context, _emailController.text, _passwordController.text);
+                      auth.signInWithEmailAndPassword(_emailController.text, _passwordController.text, context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 46, 106, 235),
