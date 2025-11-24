@@ -57,22 +57,28 @@ class _Cronometer extends State<Cronometer> {
               formatearTiempo(),
               style: TextStyle(fontSize: 50),
         ),
-        SizedBox(height: 16),
-        FloatingActionButton(onPressed: (){
-            iniciarCronometro();
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+            //SizedBox(height: 150),
+            FloatingActionButton(onPressed: (){
+                iniciarCronometro();
         },
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.green,
-        child: Icon(Icons.timer),
-        ),
-        SizedBox(height: 16),
-        FloatingActionButton(onPressed: (){
-            detenerCronometro();
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.green,
+            child: Icon(Icons.timer),
+            ),
+            //SizedBox(height: 16, width: 30,),
+            FloatingActionButton(onPressed: (){
+                detenerCronometro();
         },
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.red,
-        child: Icon(Icons.pause),
-        ),
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.red,
+              child: Icon(Icons.pause),
+              ),
+        ],)
+        
       ],
     );
   }
