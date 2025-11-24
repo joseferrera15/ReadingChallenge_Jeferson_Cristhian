@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:proyecto_final/src/providers/book_provider.dart';
 import 'package:proyecto_final/src/models/book.dart';
+import 'package:proyecto_final/src/views/start_read_page.dart';
 import 'package:proyecto_final/src/widgets/LinearProgress.dart';
 import 'package:proyecto_final/src/shared/utils.dart';
 
@@ -477,6 +478,23 @@ class _HomePageState extends State<HomePage> {
                                           );
                                           break;
                                         case 'Start':
+                                        
+                                        try {
+                                          GoRouter.of(context).push(
+                                            '/start/${books[index].id}',
+                                            extra: books[index].toJson(),
+                                          );
+                                        } catch (e) {
+                                      
+                                          Navigator.of(context, rootNavigator: true).push(
+                                            MaterialPageRoute(
+                                              builder: (context) => StartReadPage(
+                                                bookId: books[index].id,
+                                                bookData: books[index].toJson(),
+                                              ),
+                                            ),
+                                          );
+                                        }
                                           break;
                                         case 'Delete':
                                           Utils.showConfirm(

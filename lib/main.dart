@@ -21,19 +21,17 @@ void main() async {
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
-  @override
+   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routerConfig: GoRouter(
         redirect: (context, state) {
           final user = FirebaseAuth.instance.currentUser;
-
           final freeRoutes = ['/register'];
 
           if (user == null && !freeRoutes.contains(state.fullPath)) {
             return '/login';
           }
-
           return null;
         },
         initialLocation: '/home',
@@ -41,50 +39,57 @@ class MainApp extends StatelessWidget {
           GoRoute(
             path: '/login',
             name: 'login',
-            builder: (context, state) => LoginPage(),
+            builder: (context, state) => const LoginPage(),
           ),
           GoRoute(
             path: '/register',
             name: 'register',
-            builder: (context, state) => RegisterPage(),
+            builder: (context, state) => const RegisterPage(),
           ),
           GoRoute(
             path: '/home',
             name: 'home',
-            builder: (context, state) => HomePage(),
-
+            builder: (context, state) => const HomePage(),
             routes: [
               GoRoute(
-                path: '/create',
+                path: 'create', 
                 name: 'new-book',
-                builder: (context, state) => AdminBookPage(),
+                builder: (context, state) =>  AdminBookPage(),
               ),
               GoRoute(
-                path: '/:id',
+                path: 'update/:id', 
                 name: 'update-book',
-
                 builder: (context, state) {
                   final book = state.extra as Map<String, dynamic>;
-
                   return AdminBookPage(book: book);
                 },
               ),
             ],
           ),
           GoRoute(
+  path: '/start/:id',
+  name: 'start',
+  builder: (context, state) {
+
+    try {
+      final bookId = state.pathParameters['id']!;
+      final bookData = state.extra as Map<String, dynamic>? ?? {};
+
+      return StartReadPage(bookId: bookId, bookData: bookData);
+    } catch (e) {
+      return Scaffold();
+    }
+  },
+),
+          GoRoute(
             path: '/stadistics',
             name: 'statistics',
-            builder: (context, state) => Stadistics(),
-          ),
-          GoRoute(
-            path: '/start',
-            name: 'start',
-            builder: (context, state) => StartReadPage(),
+            builder: (context, state) => const Stadistics(),
           ),
           GoRoute(
             path: '/about',
             name: 'about',
-            builder: (context, state) => AboutPage(),
+            builder: (context, state) => const AboutPage(),
           ),
         ],
       ),
