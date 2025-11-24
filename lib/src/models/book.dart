@@ -6,7 +6,7 @@ class Book
   final String coverImage;
   final int currentPage;
   final int totalPages;
-  final String? status; 
+  final String status; 
 
   Book({
     required this.id,
@@ -15,14 +15,14 @@ class Book
     this.coverImage = "",
     required this.currentPage,
     required this.totalPages,
-    this.status,
+    required this.status,
   });
 
   factory Book.fromJson(Map<String, dynamic> json) => Book(
     id: json['id'], 
     title: json['title'],
     author: json['author'],
-    coverImage: json['cover'], //!= null ? NetworkImage(json['coverImage']) : null,
+    coverImage: json['cover'], 
     currentPage: json['currentPage'],
     totalPages: json['totalPages'],
     status: json['status'],
@@ -34,7 +34,7 @@ class Book
     {
       'title': title,
       'author': author,
-      'cover': coverImage ?? "maestria_cover.webp",
+      'cover': coverImage,
       'currentPage': currentPage,
       'totalPages': totalPages,
       'status': status,

@@ -1,16 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+//import 'package:flutter/foundation.dart';
+//import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:proyecto_final/src/shared/utils.dart';
-import 'package:proyecto_final/src/widgets/SliderListTile.dart';
-import 'package:proyecto_final/src/widgets/LinearProgress.dart';
+//import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+//import 'package:proyecto_final/src/shared/utils.dart';
+//import 'package:proyecto_final/src/widgets/SliderListTile.dart';
+//import 'package:proyecto_final/src/widgets/LinearProgress.dart';
 import 'package:proyecto_final/src/providers/book_provider.dart';
 import 'package:proyecto_final/src/models/book.dart';
 
-class Stadistics extends StatefulWidget {
+class Stadistics extends StatefulWidget 
+{
   const Stadistics({super.key});
 
   @override
@@ -20,17 +22,51 @@ class Stadistics extends StatefulWidget {
 class _StadisticsState extends State<Stadistics>
 {
   BookProvider bookProvider = BookProvider();
-  final user = FirebaseAuth.instance.currentUser;
+  Stream<List<Book>> _currentStream = Stream.empty();
+  String _currentFilter = 'All';
 
   @override
   void initState() 
   {
     super.initState();
+    _currentStream = bookProvider.getAllBooksStream();
+  }
+
+  void _handleFilterSelection(String filter) 
+  {
+    setState(() {
+      _currentFilter = filter;
+      
+      switch (filter) 
+      {
+        case 'All':
+          _currentStream = bookProvider.getAllBooksStream();
+          break;
+        case 'Pending':
+          _currentStream = bookProvider.getBooksByStatusStream('Pendiente');
+          break;
+        case 'In Progress':
+          _currentStream = bookProvider.getBooksByStatusStream('En Progreso');
+          break;
+        case 'Completed':
+          _currentStream = bookProvider.getBooksByStatusStream('Finalizado');
+          break;
+        case 'Alphabetical':
+          _currentStream = bookProvider.searchBooksStream();
+          break;
+
+        default: 
+          _currentStream = bookProvider.getAllBooksStream();
+          break;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) 
   {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold
     (
       appBar: AppBar
@@ -60,72 +96,15 @@ class _StadisticsState extends State<Stadistics>
                 Row(
                   children: 
                   [
-                  Text("Order by"),
+                  Text("Order by: ${_currentFilter}", style: TextStyle(fontWeight: FontWeight.bold),),
                   PopupMenuButton<String>
                   (
-                    onSelected: (value) 
-                    {
-                      switch (value) 
-                      {
-                        case 'All':
-                          print("Consulta todos");
-                          final db = FirebaseFirestore.instance;
-
-                          final myQuery = db.collection('users')
-                          .doc(user?.uid)
-                          .collection('books');
-
-                          bookProvider.getAllBooksStreamWithCondition(myQuery);
-                          
-                          break;
-                        case 'Pending':
-                          final db = FirebaseFirestore.instance;
-
-                          bookProvider.getAllBooksStreamWithCondition(
-                            db.collection('users')
-                            .doc(user?.uid)
-                            .collection('books')
-                            .where('currentPage', isEqualTo: 0)
-                          );
-                          break;
-                        case 'InProgress':
-                          final db = FirebaseFirestore.instance;
-
-                          bookProvider.getAllBooksStreamWithCondition(
-                            db.collection('users')
-                            .doc(user?.uid)
-                            .collection('books')
-                            .where('currentPage', isGreaterThan: 0)
-                          );
-                          break;
-                        case 'Completed':
-                          final db = FirebaseFirestore.instance;
-
-                          bookProvider.getAllBooksStreamWithCondition(
-                            db.collection('users')
-                            .doc(user?.uid)
-                            .collection('books')
-                            .where('currentPage', isEqualTo: 'totalPages')
-                          );
-                          
-                          break;
-
-                        default: 
-                          final db = FirebaseFirestore.instance;
-
-                          Query<Map<String, dynamic>> defaultQuery = db.collection('users')
-                          .doc(user?.uid)
-                          .collection('books');
-    
-                          bookProvider.getAllBooksStreamWithCondition(defaultQuery);
-                        break;
-                      }
-                    },
-                    itemBuilder: (context) => 
+                    onSelected: _handleFilterSelection,
+                    itemBuilder: (BuildContext context) => 
                     [
                       PopupMenuItem(value: 'All', child: Text('All')),
                       PopupMenuItem(value: 'Pending', child: Text('Pending')),
-                      PopupMenuItem(value: 'In Progress', child: Text('InProgress')),
+                      PopupMenuItem(value: 'In Progress', child: Text('In Progress')),
                       PopupMenuItem(value: 'Completed', child: Text('Completed')),
                       PopupMenuItem(value: 'Favorites', child: Text('Favorites')),
                       PopupMenuItem(value: 'Alphabetical', child: Text('Alphabetical')),
@@ -139,29 +118,25 @@ class _StadisticsState extends State<Stadistics>
         ),
       ),
 
-      body: StreamBuilder<QuerySnapshot>
+      body: StreamBuilder<List<Book>>
       (
-        stream: bookProvider.booksStream, 
+        stream: _currentStream, 
         builder: (context, snapshot)
         {
           if (snapshot.connectionState == ConnectionState.waiting) 
           {
             return Center(child: CircularProgressIndicator());
           }
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) 
+          if (!snapshot.hasData) 
           {
-            return Text('!data, Number of documents: ${snapshot.data?.docs.length}, Documents: ${snapshot.data?.docs.map((doc) => doc.data()).toList()}');
+            return Text('!data');
           }
           if (snapshot.hasError) 
           {
             return Center(child: Text('Error: ${snapshot.error.toString()}'));
           }
 
-          print('Number of documents: ${snapshot.data!.docs.length}');
-          print('Documents: ${snapshot.data!.docs.map((doc) => doc.data()).toList()}');
-
-          List<QueryDocumentSnapshot> books = snapshot.data!.docs;
-          //final List<Book> books = snapshot.data!;
+          final books = snapshot.data ?? [];
 
           return ListView.builder
           (
@@ -169,9 +144,10 @@ class _StadisticsState extends State<Stadistics>
             itemBuilder: (BuildContext context, index)
             {
               final book = books[index];
+
               return ExpansionTile
               (
-                title: Title(color: Colors.amberAccent, child: Text(book['title'])),
+                title: Title(color: Colors.amberAccent, child: Text(book.title)),
 
                 children: 
                 [

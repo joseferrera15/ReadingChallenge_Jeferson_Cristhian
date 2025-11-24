@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class AboutPage extends StatelessWidget {
+class AboutPage extends StatelessWidget 
+{
   const AboutPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Acerca de mi'),
+        title: Text('Acerca De Nosotros'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
@@ -18,7 +19,8 @@ class AboutPage extends StatelessWidget {
         padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+          children: 
+          [
             // icono de la appp
             Container(
               width: 100,
@@ -35,7 +37,6 @@ class AboutPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             
-            // TÍTULO
             Text(
               'Book Pro',
               style: TextStyle(
@@ -55,7 +56,6 @@ class AboutPage extends StatelessWidget {
             
             SizedBox(height: 30),
             
-            // DESCRIPCIÓN GENÉRICA
             Card(
               elevation: 3,
               shape: RoundedRectangleBorder(
@@ -76,8 +76,9 @@ class AboutPage extends StatelessWidget {
                     ),
                     SizedBox(height: 12),
                     Text(
-                      'Soy un apasionado estudiante de Ingeniería de Sistemas que adora programar y crear aplicaciones innovadoras. '
-                      'Este proyecto fue desarrollado con mucho 💙 usando Flutter y Firebase.',
+                      'Somos un grupo de estudiantes de Ingeniería de Sistemas que adora programar y crear aplicaciones innovadoras.' 
+                      'Nuestro objetivo a largo plazo es la eficiencia sin descuidar la interaccion para los usuarios.'
+                      'Este proyecto fue desarrollado usando Flutter y Firebase.',
                       style: TextStyle(
                         fontSize: 15,
                         height: 1.5,
@@ -153,13 +154,13 @@ class AboutPage extends StatelessWidget {
                     ListTile(
                       leading: Icon(Icons.email_rounded, color: Colors.blue),
                       title: Text('Email'),
-                      subtitle: Text('desarrollador@ejemplo.com'),
+                      subtitle: Text('jefersonalexanderreyeslopez@gmail.com'),
                       dense: true,
                     ),
                     ListTile(
                       leading: Icon(Icons.code_rounded, color: Colors.green),
                       title: Text('GitHub'),
-                      subtitle: Text('github.com/miusuario'),
+                      subtitle: Text('github.com/Jefersonreyes2006'),
                       dense: true,
                     ),
                   ],

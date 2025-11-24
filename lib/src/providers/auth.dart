@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 
 class AuthProvider 
 {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  //final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> createUserWithEmailAndPassword(BuildContext context, String email, String password) async 

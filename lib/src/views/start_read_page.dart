@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:proyecto_final/src/providers/safe_cronometer_provider.dart';
 import 'package:proyecto_final/src/providers/book_provider.dart';
 
@@ -6,7 +7,6 @@ class StartReadPage extends StatefulWidget {
   final String bookId;
   final Map<String, dynamic> bookData;
   
-
   const StartReadPage({
     super.key,
     required this.bookId,
@@ -23,56 +23,64 @@ final TextEditingController _pageController = TextEditingController();
 final BookProvider _bookProvider = BookProvider();
 bool _isLoading = false;
  @override
-  void initState() {
+  void initState() 
+  {
     super.initState();
-    
-    _pageController.text = widget.bookData['currentPage']?.toString() ?? '0';
   }
 
   @override
-  void dispose() {
+  void dispose() 
+  {
     _pageController.dispose();
     super.dispose();
   }
 
-  Future<void>_ActualizarPaginasLeidas() async{
+  Future<void>_ActualizarPaginasLeidas() async
+  {
     final newPage = int.tryParse(_pageController.text)??0;
-    if(newPage> widget.bookData['totalPages']){
+    
+    if((widget.bookData['currentPage']+newPage) > widget.bookData['totalPages'])
+    {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('La página no puede ser mayor a ${widget.bookData['totalPages']}'),
+          content: Text('The current page number must not exceed the total number of pages.'),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() { _isLoading = true; });
+
     final success = await _bookProvider.updateCurrentPage(
       bookId: widget.bookId,
-      currentPage: newPage,
+      currentPage: (widget.bookData['currentPage'] + newPage),
     );
 
     setState(() {
       _isLoading = false;
     });
-    if (success) {
+    if (success) 
+    {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Páginas actualizadas correctamente!'),
+        SnackBar(
+          content: Text('Progress Updated Succesfully!'),
           backgroundColor: Colors.green,
         ),
       );
-    } else {
+
+      context.pop();
+    } 
+    else 
+    {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Error al actualizar las páginas'),
+          content: Text('Error Updating Progress'),
           backgroundColor: Colors.red,
         ),
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,10 +96,12 @@ bool _isLoading = false;
               
             ), 
             const SizedBox(height: 30),
+
             TextField(
+              controller: _pageController,
               decoration: InputDecoration(
                 label: const Text('Páginas Leídas'),
-                hintText: 'Ingresa las páginas leídas', 
+                hintText: 'Ingresa las páginas leídas',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

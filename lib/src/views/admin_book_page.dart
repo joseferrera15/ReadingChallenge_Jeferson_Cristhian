@@ -122,35 +122,37 @@ class _AdminTodoPageState extends State<AdminBookPage>
             ),
             
             SizedBox(height: 16),
-            TextField(
+            TextField
+            (
               focusNode: titleFocus,
               controller: titleController,
-              decoration: InputDecoration(
-                label: Text('Titulo'),
-                hint: Text('Eje. Crear opción de eliminar'),
+              maxLength: 21,
+
+              decoration: InputDecoration
+              (
+                label: Text('Title'),
+                hint: Text('Physics For Engineers'),
+
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
 
-                // suffixIcon: IconButton(
-                //   icon: Icon(Icons.visibility),
-                //   onPressed: () {},
-                // ),
                 prefixIcon: Icon(Icons.text_fields_rounded),
               ),
 
               maxLines: 1,
-              maxLength: 50,
               obscureText: false,
               keyboardType: TextInputType.visiblePassword,
               // style: TextStyle(color: Colors.red),
             ),
             SizedBox(height: 16),
+
             TextField(
               controller: autorController,
+              maxLength: 20,
               maxLines: 1,
               decoration: InputDecoration(
-                label: Text('Autor'),
+                label: Text('Author'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -198,6 +200,7 @@ class _AdminTodoPageState extends State<AdminBookPage>
                     SizedBox(height: 16),
                     TextField(
                       controller: paginasTotalesController,
+                      maxLength: 20,
                       maxLines: 1,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
@@ -219,22 +222,11 @@ class _AdminTodoPageState extends State<AdminBookPage>
         backgroundColor: Colors.blue[300],
         onPressed: () async 
         {
-          print(_image?.path);
           if (titleController.text.isEmpty) 
           {
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   SnackBar(
-            //     content: Text(
-            //       'Debe ingresar un titulo',
-            //       style: TextStyle(color: Colors.red[50]),
-            //     ),
-            //     backgroundColor: Colors.red,
-            //   ),
-            // );
-
             Utils.showSnackBar(
               context: context,
-              title: "El titulo es obligatorio",
+              title: "The title is necessary.",
               color: Colors.red,
             );
 
@@ -244,7 +236,7 @@ class _AdminTodoPageState extends State<AdminBookPage>
           {
             Utils.showSnackBar(
               context: context,
-              title: "El Autor es obligatorio",
+              title: "The author is necessary.",
               color: Colors.red,
             );
 
@@ -254,7 +246,7 @@ class _AdminTodoPageState extends State<AdminBookPage>
           {
             Utils.showSnackBar(
               context: context,
-              title: "Especifica las Paginas Leidas",
+              title: "Write down the pages you have read.",
               color: Colors.red,
             );
 
@@ -264,7 +256,7 @@ class _AdminTodoPageState extends State<AdminBookPage>
           {
             Utils.showSnackBar(
               context: context,
-              title: "Especifica el Total de Paginas",
+              title: "Write the total number of pages.",
               color: Colors.red,
             );
             
@@ -276,7 +268,7 @@ class _AdminTodoPageState extends State<AdminBookPage>
             'title': titleController.text,
             'author': autorController.text,
             'cover': _image?.path ?? "https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg",
-            'status': 'Pendiente',
+            'status': int.parse(paginasLeidasController.text) == 0 ? 'Pendiente': 'En Progreso',
             'currentPage': int.parse(paginasLeidasController.text),
             'totalPages': int.parse(paginasTotalesController.text),
             'user': FirebaseAuth.instance.currentUser?.uid,
@@ -284,7 +276,6 @@ class _AdminTodoPageState extends State<AdminBookPage>
 
           if (bookId == null) 
           {
-            print("Se creara un nuevo libro");
             await bookProvider.saveBook(newBook);
           } 
           else 
@@ -294,29 +285,11 @@ class _AdminTodoPageState extends State<AdminBookPage>
             booksList[indice] = newBook;
           }
 
-          // final snackBar = SnackBar(
-          //   content: const Text('Yay! A SnackBar!'),
-          //   action: SnackBarAction(
-          //     label: 'Undo',
-          //     onPressed: () {
-          //       // Some code to undo the change.
-          //     },
-          //   ),
-          // );
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   SnackBar(
-          //     content: Text('Tarea creada correctamente'),
-          //     // backgroundColor: ,
-          //     duration: Duration(days: 4),
-          //     action: SnackBarAction(label: 'Cerrar', onPressed: () {}),
-          //   ),
-          // );
-
           if (!context.mounted) return;
 
           Utils.showSnackBar(
             context: context,
-            title: "Libro añadido correctamente",
+            title: "Book added succesfully.",
           );
 
           titleController.text = '';
