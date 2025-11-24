@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_final/src/providers/safe_cronometer_provider.dart';
+import 'package:proyecto_final/src/providers/book_provider.dart';
 
 class StartReadPage extends StatefulWidget {
   final String bookId;
   final Map<String, dynamic> bookData;
+  
 
   const StartReadPage({
     super.key,
@@ -16,6 +18,61 @@ class StartReadPage extends StatefulWidget {
 }
 
 class _StartReadPageState extends State<StartReadPage> {
+
+final TextEditingController _pageController = TextEditingController();
+final BookProvider _bookProvider = BookProvider();
+bool _isLoading = false;
+ @override
+  void initState() {
+    super.initState();
+    
+    _pageController.text = widget.bookData['currentPage']?.toString() ?? '0';
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  Future<void>_ActualizarPaginasLeidas() async{
+    final newPage = int.tryParse(_pageController.text)??0;
+    if(newPage> widget.bookData['totalPages']){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('La página no puede ser mayor a ${widget.bookData['totalPages']}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+    });
+    final success = await _bookProvider.updateCurrentPage(
+      bookId: widget.bookId,
+      currentPage: newPage,
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Páginas actualizadas correctamente!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error al actualizar las páginas'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +121,8 @@ class _StartReadPageState extends State<StartReadPage> {
             ),
             SizedBox(height: 30,),
             FloatingActionButton.extended(onPressed: (){
-
+                      _isLoading ? null : _ActualizarPaginasLeidas();
+                      label: _isLoading ;
                     },
                     label: Text('Registrar Paginas Leidas', style: TextStyle(color: Colors.white),),
                     backgroundColor: Colors.black,

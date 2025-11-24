@@ -124,4 +124,28 @@ Future<Map<String, dynamic>> getUserStats() async {
     'daysStreak': 15, // el unico generico (por ahora)
   };
 }
+
+//actualizar paginas leidas
+Future<bool> updateCurrentPage({required String bookId, required int currentPage}) async {
+  try {
+    final db = FirebaseFirestore.instance;
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return false;
+
+    final docRef = db.collection('users')
+        .doc(user.uid)
+        .collection('books')
+        .doc(bookId);
+
+    await docRef.update({
+      'currentPage': currentPage,
+      'lastUpdated': FieldValue.serverTimestamp(),
+    });
+    return true;
+  } catch (e) {
+    print('Error updating current page: $e');
+    return false;
+  }
+}
 }
