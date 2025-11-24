@@ -70,8 +70,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           child: Column(
-            children: 
-            [
+            children: [
               Container(
                 padding: EdgeInsets.all(25),
                 decoration: BoxDecoration(
@@ -174,7 +173,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     SizedBox(height: 20),
 
-                    // ESTADÍSTICAS ELEGANTES
+                    // est elegantees, puee
                     Container(
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -209,7 +208,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
-              // MENÚ PRINCIPAL
+              // el menu principalll
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 20),
@@ -226,7 +225,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       SizedBox(height: 15),
 
-                      // ITEMS DEL MENÚ
+                      //Ú
                       Expanded(
                         child: ListView(
                           padding: EdgeInsets.zero,
@@ -251,7 +250,7 @@ class _HomePageState extends State<HomePage> {
                               title: 'Mis Favoritos',
                               onTap: () {
                                 Navigator.pop(context);
-                                // Navegar a favoritos
+                                // favoritos
                               },
                             ),
                             _buildMenuItem(
@@ -293,17 +292,19 @@ class _HomePageState extends State<HomePage> {
                             ),
                             _buildMenuItem(
                               icon: Icons.info_rounded,
-                              title: 'Acerca de',
+                              title: 'Acerca de mi',
                               onTap: () {
                                 Navigator.pop(context);
-                                // Navegar a acerca de
+                                context.push(
+                                  '/about',
+                                ); /
                               },
                             ),
                           ],
                         ),
                       ),
 
-                      // BOTÓN DE CERRAR SESIÓN
+                      // cerra sesion
                       Padding(
                         padding: EdgeInsets.all(20),
                         child: Container(
@@ -545,35 +546,38 @@ class _HomePageState extends State<HomePage> {
         },
       ),
 
-      bottomNavigationBar: BottomAppBar
-      (
+      bottomNavigationBar: BottomAppBar(
         height: 50,
         elevation: 0.2,
         shadowColor: Color(0xFFE5E5E5),
         notchMargin: 0,
         padding: EdgeInsets.all(0),
 
-        child: Row
-        (
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
 
-          children: 
-          [
+          children: [
             IconButton(
-              onPressed: () 
-              {
+              onPressed: () {
                 context.go('/home');
               },
-              icon: Icon(Icons.home, size: 35, color: const Color.fromARGB(255, 31, 31, 31),),
+              icon: Icon(
+                Icons.home,
+                size: 35,
+                color: const Color.fromARGB(255, 31, 31, 31),
+              ),
             ),
 
             IconButton(
-              onPressed: () 
-              {
+              onPressed: () {
                 context.go('/stadistics');
               },
-              icon: Icon(Icons.line_axis_rounded, size: 35, color: const Color.fromARGB(255, 31, 31, 31),),
+              icon: Icon(
+                Icons.line_axis_rounded,
+                size: 35,
+                color: const Color.fromARGB(255, 31, 31, 31),
+              ),
             ),
           ],
         ),
