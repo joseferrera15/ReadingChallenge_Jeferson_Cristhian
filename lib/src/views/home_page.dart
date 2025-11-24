@@ -297,7 +297,7 @@ class _HomePageState extends State<HomePage> {
                                 Navigator.pop(context);
                                 context.push(
                                   '/about',
-                                ); /
+                                ); 
                               },
                             ),
                           ],

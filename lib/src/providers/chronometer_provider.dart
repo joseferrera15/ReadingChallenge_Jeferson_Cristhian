@@ -1,84 +1,101 @@
-
 import 'dart:async';
 import 'package:flutter/material.dart';
-
 
 class Cronometer extends StatefulWidget {
   const Cronometer({super.key});
 
   @override
-  State<Cronometer> createState() => _Cronometer();
+  State<Cronometer> createState() => _CronometerState();
 }
 
-class _Cronometer extends State<Cronometer> {
+class _CronometerState extends State<Cronometer> {
   int milisegundos = 0;
   bool estaIniciado = false;
-  late Timer timer;
-  void iniciarCronometro(){
-    if(!estaIniciado){
-          timer = Timer.periodic(Duration(milliseconds: 100), (timer){
-          this.milisegundos += 100;
-          setState(() {
-            
-          });
+  Timer? timer; 
+
+  void iniciarCronometro() {
+    if (!estaIniciado) {
+      timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+        setState(() {
+          milisegundos += 100;
         });
-        estaIniciado = true;
+      });
+      estaIniciado = true;
     }
   }
+
   void detenerCronometro() {
     if (estaIniciado) {
-      timer.cancel();
+      timer?.cancel(); 
       estaIniciado = false;
     }
   }
 
-  String formatearTiempo(){
-      Duration duration = Duration(microseconds: this.milisegundos);
-      String dosValores(int valor){
-        return valor >=10 ? "$valor" :"0$valor";
+  void reiniciarCronometro() {
+    timer?.cancel(); 
+    setState(() {
+      milisegundos = 0;
+      estaIniciado = false;
+    });
+  }
 
-      }
-      String horas = dosValores(duration.inHours);
-      String minutos = dosValores(duration.inMinutes.remainder(60));
-      String segundos = dosValores(duration.inSeconds.remainder(60));
-      String milisegundos = dosValores(duration.inMilliseconds.remainder(1000));
-      return "$horas:$minutos: $segundos: $milisegundos";
+  String formatearTiempo() {
+    Duration duration = Duration(milliseconds: milisegundos);
+    String dosValores(int valor) {
+      return valor >= 10 ? "$valor" : "0$valor";
     }
+
+    String horas = dosValores(duration.inHours);
+    String minutos = dosValores(duration.inMinutes.remainder(60));
+    String segundos = dosValores(duration.inSeconds.remainder(60));
+    
+    String centesimas = dosValores((milisegundos ~/ 10) % 100);
+    return "$horas:$minutos:$segundos:$centesimas";
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel(); 
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(Icons.timer_outlined, color: Colors.blue, size: 60),
-          SizedBox(width: 10),
-          Text(
-              formatearTiempo(),
-              style: TextStyle(fontSize: 50),
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Icon(Icons.timer_outlined, color: Colors.blue, size: 60),
+        const SizedBox(height: 10),
+        Text(
+          formatearTiempo(),
+          style: const TextStyle(fontSize: 50),
         ),
+        const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-            //SizedBox(height: 150),
-            FloatingActionButton(onPressed: (){
-                iniciarCronometro();
-        },
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.green,
-            child: Icon(Icons.timer),
+          children: [
+            FloatingActionButton(
+              onPressed: iniciarCronometro,
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.green,
+              child: const Icon(Icons.play_arrow), 
             ),
-            //SizedBox(height: 16, width: 30,),
-            FloatingActionButton(onPressed: (){
-                detenerCronometro();
-        },
+            FloatingActionButton(
+              onPressed: detenerCronometro,
               foregroundColor: Colors.white,
               backgroundColor: Colors.red,
-              child: Icon(Icons.pause),
-              ),
-        ],)
-        
+              child: const Icon(Icons.pause),
+            ),
+            FloatingActionButton(
+              onPressed: reiniciarCronometro,
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.black,
+              child: const Icon(Icons.restart_alt),
+            ),
+          ],
+        ),
       ],
     );
   }
