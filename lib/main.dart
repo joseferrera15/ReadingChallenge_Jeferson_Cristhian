@@ -25,7 +25,8 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routerConfig: GoRouter(
-        redirect: (context, state) {
+        redirect: (context, state) 
+        {
           final user = FirebaseAuth.instance.currentUser;
           final freeRoutes = ['/register'];
 

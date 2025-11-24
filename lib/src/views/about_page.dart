@@ -143,7 +143,7 @@ class AboutPage extends StatelessWidget
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '📞Contacto',
+                      'Contacto',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

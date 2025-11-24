@@ -39,6 +39,23 @@ bool _isLoading = false;
   {
     final newPage = int.tryParse(_pageController.text)??0;
     
+    if ((widget.bookData['currentPage']+newPage) == widget.bookData['totalPages']) 
+    {
+      final success = await _bookProvider.updateCurrentPage(
+        bookId: widget.bookId,
+        currentPage: (widget.bookData['currentPage'] + newPage),
+        totalPages: widget.bookData['totalPages'],
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Book completed!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      context.pop();
+      return;
+    }
     if((widget.bookData['currentPage']+newPage) > widget.bookData['totalPages'])
     {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -54,6 +71,7 @@ bool _isLoading = false;
     final success = await _bookProvider.updateCurrentPage(
       bookId: widget.bookId,
       currentPage: (widget.bookData['currentPage'] + newPage),
+      totalPages: widget.bookData['totalPages']
     );
 
     setState(() {
@@ -67,7 +85,6 @@ bool _isLoading = false;
           backgroundColor: Colors.green,
         ),
       );
-
       context.pop();
     } 
     else 

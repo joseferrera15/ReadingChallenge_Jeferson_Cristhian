@@ -19,7 +19,8 @@ class AuthProvider
       );
     
       await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!, context, password);
-    } catch (e) 
+    } 
+    catch (e) 
     {
       print("Error en iniciar sesion por correo: $e");
     }

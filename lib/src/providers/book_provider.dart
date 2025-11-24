@@ -180,8 +180,10 @@ class BookProvider
     };
   }
 
+
+
   //actualizar paginas leidas
-  Future<bool> updateCurrentPage({required String bookId, required int currentPage}) async 
+  Future<bool> updateCurrentPage({required String bookId, required int currentPage, required int totalPages}) async 
   {
     try 
     {
@@ -195,6 +197,17 @@ class BookProvider
       .collection('books')
       .doc(bookId);
 
+      if (currentPage == totalPages) 
+      {
+        print('Son iguales');
+        await docRef.update({
+          'currentPage': currentPage,
+          'status': 'Finalizado',
+          'lastUpdated': FieldValue.serverTimestamp(),
+        });
+
+        return true;
+      }
       await docRef.update({
         'currentPage': currentPage,
         'status': 'En Progreso',
