@@ -8,6 +8,7 @@ import 'package:proyecto_final/src/views/home_page.dart';
 import 'package:proyecto_final/src/views/stadistics.dart';
 import 'firebase_options.dart';
 import 'package:proyecto_final/src/views/admin_book_page.dart';
+import 'package:proyecto_final/src/views/start_read_page.dart';
 
 void main() async 
 {
@@ -70,9 +71,11 @@ class MainApp extends StatelessWidget
                   return AdminBookPage(book: book);
                 },
               ),
+              GoRoute(path: '/start', name: 'start', builder: (context, state) => StartReadPage()),
             ],
           ),
           GoRoute(path: '/stadistics', name: 'statistics', builder: (context, state) => Stadistics()),
+          
         ]
       ),
       debugShowCheckedModeBanner: false,
