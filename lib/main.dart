@@ -71,11 +71,11 @@ class MainApp extends StatelessWidget
                   return AdminBookPage(book: book);
                 },
               ),
-              GoRoute(path: '/start', name: 'start', builder: (context, state) => StartReadPage()),
+              
             ],
           ),
           GoRoute(path: '/stadistics', name: 'statistics', builder: (context, state) => Stadistics()),
-          
+          GoRoute(path: '/start', name: 'start', builder: (context, state) => StartReadPage()),
         ]
       ),
       debugShowCheckedModeBanner: false,
