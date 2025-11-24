@@ -36,7 +36,7 @@ class MainApp extends StatelessWidget {
 
           return null;
         },
-        initialLocation: '/start',
+        initialLocation: '/home',
         routes: [
           GoRoute(
             path: '/login',
