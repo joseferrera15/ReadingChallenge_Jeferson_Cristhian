@@ -1,8 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:proyecto_final/src/shared/utils.dart';
 import 'package:proyecto_final/src/widgets/SliderListTile.dart';
 import 'package:proyecto_final/src/widgets/LinearProgress.dart';
+import 'package:proyecto_final/src/providers/book_provider.dart';
+import 'package:proyecto_final/src/models/book.dart';
 
 class Stadistics extends StatefulWidget 
 {
@@ -14,17 +19,148 @@ class Stadistics extends StatefulWidget
 
 class _StadisticsState extends State<Stadistics>
 {
-  double progress = 0;
+  BookProvider bookProvider = BookProvider();
+  final user = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() 
+  {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) 
   {
-    return Scaffold(
+    return Scaffold
+    (
       appBar: AppBar
       (
-        title: const Text('Estadísticas', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),),
-        centerTitle: true,
+        title: const Text('My Books & Progress', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Color.fromARGB(223, 255, 255, 255)),),
+        elevation: 0.5,
+        shadowColor: Color.fromARGB(255, 192, 143, 255),
+        backgroundColor: Color.fromARGB(255, 192, 143, 255),
+
+        bottom: PreferredSize
+        (
+          preferredSize: Size.fromHeight(50),
+          
+          child: Container 
+          ( 
+            color: Colors.white,
+            child: Row
+            (
+              spacing: 40,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+
+              children: 
+              [
+                Text('Book Analytics'),
+
+                Row(
+                  children: 
+                  [
+                  Text("Order by"),
+                  PopupMenuButton<String>
+                  (
+                    onSelected: (value) 
+                    {
+                      switch (value) 
+                      {
+                        case 'Pending':
+                          final db = FirebaseFirestore.instance;
+
+                          bookProvider.getAllBooksStreamWithCondition(
+                            db.collection('users')
+                            .doc(user?.uid)
+                            .collection('books')
+                            .where('currentPage', isEqualTo: 0)
+                          );
+                          break;
+                        case 'InProgress':
+                          final db = FirebaseFirestore.instance;
+
+                          bookProvider.getAllBooksStreamWithCondition(
+                            db.collection('users')
+                            .doc(user?.uid)
+                            .collection('books')
+                            .where('currentPage', isNotEqualTo: 0)
+                          );
+                          break;
+                        case 'Completed':
+                          final db = FirebaseFirestore.instance;
+
+                          bookProvider.getAllBooksStreamWithCondition(
+                            db.collection('users')
+                            .doc(user?.uid)
+                            .collection('books')
+                            .where('currentPage', isEqualTo: 3)
+                          );
+                          
+                          break;
+
+                        default: return;
+                      }
+                    },
+                    itemBuilder: (context) => 
+                    [
+                      PopupMenuItem(value: 'Pending', child: Text('Pending')),
+                      PopupMenuItem(value: 'In Progress', child: Text('InProgress')),
+                      PopupMenuItem(value: 'Completed', child: Text('Completed')),
+                      PopupMenuItem(value: 'Favorites', child: Text('Favorites')),
+                      PopupMenuItem(value: 'Alphabetical', child: Text('Alphabetical')),
+                    ],
+                    icon: Icon(Icons.tune_rounded)
+                  )
+                ])
+              ]
+            ),
+          )
+        ),
       ),
+
+      body: StreamBuilder
+      (
+        stream: bookProvider.getAllBooksStream(), 
+        builder: (context, snapshot)
+        {
+          if (snapshot.connectionState == ConnectionState.waiting) 
+          {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) 
+          {
+            return Text('!data');
+          }
+          if (snapshot.hasError) 
+          {
+            return Center(child: Text('Error: ${snapshot.error.toString()}'));
+          }
+
+          final List<Book> books = snapshot.data!;
+
+          return ListView.builder
+          (
+            itemCount: books.length,
+            itemBuilder: (BuildContext context, index)
+            {
+              return ExpansionTile
+              (
+                title: Title(color: Colors.amberAccent, child: Text(books[index].title)),
+
+                children: 
+                [
+                  Image(image: NetworkImage("https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg"), width: 100,)
+                ],
+              );
+          });
+        }
+      ),
+
+      
+
+
+      /*
       body: AnimationLimiter
       (
         child: ListView.builder(itemCount: 12, itemBuilder: (BuildContext context, int index)
@@ -51,14 +187,14 @@ class _StadisticsState extends State<Stadistics>
           );
         })
       ),
-          //],
-        //),
-      //)
+      */
+
       bottomNavigationBar: BottomAppBar
       (
-        height: 30,
+        height: 40,
         color: const Color.fromARGB(255, 247, 247, 244),
-        clipBehavior: Clip.antiAlias,
+        //clipBehavior: Clip.antiAlias,
+
         child: Row
         (
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
