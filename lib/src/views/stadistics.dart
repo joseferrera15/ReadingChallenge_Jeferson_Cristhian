@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -34,10 +35,10 @@ class _StadisticsState extends State<Stadistics>
     (
       appBar: AppBar
       (
-        title: const Text('My Books & Progress', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Color.fromARGB(223, 255, 255, 255)),),
-        elevation: 0.5,
-        shadowColor: Color.fromARGB(255, 192, 143, 255),
-        backgroundColor: Color.fromARGB(255, 192, 143, 255),
+        title: const Text('My Books & Progress', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Color.fromARGB(223, 0, 0, 0)),),
+        elevation: 0.4,
+        backgroundColor: const Color.fromARGB(255, 250, 250, 250),
+        shadowColor: Color(0xFFE5E5E5),
 
         bottom: PreferredSize
         (
@@ -66,6 +67,15 @@ class _StadisticsState extends State<Stadistics>
                     {
                       switch (value) 
                       {
+                        case 'All':
+                          final db = FirebaseFirestore.instance;
+
+                          bookProvider.getAllBooksStreamWithCondition(
+                          db.collection('users')
+                          .doc(user?.uid)
+                          .collection('books'));
+                          
+                          break;
                         case 'Pending':
                           final db = FirebaseFirestore.instance;
 
@@ -83,7 +93,7 @@ class _StadisticsState extends State<Stadistics>
                             db.collection('users')
                             .doc(user?.uid)
                             .collection('books')
-                            .where('currentPage', isNotEqualTo: 0)
+                            .where('currentPage', isGreaterThan: 0)
                           );
                           break;
                         case 'Completed':
@@ -93,7 +103,7 @@ class _StadisticsState extends State<Stadistics>
                             db.collection('users')
                             .doc(user?.uid)
                             .collection('books')
-                            .where('currentPage', isEqualTo: 3)
+                            .where('currentPage', isEqualTo: 'totalPages')
                           );
                           
                           break;
@@ -103,6 +113,7 @@ class _StadisticsState extends State<Stadistics>
                     },
                     itemBuilder: (context) => 
                     [
+                      PopupMenuItem(value: 'All', child: Text('All')),
                       PopupMenuItem(value: 'Pending', child: Text('Pending')),
                       PopupMenuItem(value: 'In Progress', child: Text('InProgress')),
                       PopupMenuItem(value: 'Completed', child: Text('Completed')),
@@ -227,50 +238,35 @@ class _StadisticsState extends State<Stadistics> {
 
       bottomNavigationBar: BottomAppBar
       (
-        height: 40,
-        color: const Color.fromARGB(255, 247, 247, 244),
-        //clipBehavior: Clip.antiAlias,
+        height: 50,
+        elevation: 0.2,
+        shadowColor: Color(0xFFE5E5E5),
+        notchMargin: 0,
+        padding: EdgeInsets.all(0),
 
         child: Row
         (
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                // BOTÓN HOME SUPER SIMPLE
-                TextButton(
-                  onPressed: () {
+              children: 
+              [
+                IconButton(
+                  onPressed: () 
+                  {
                     context.go('/home');
                   },
-                  child: Text(
-                    'HOME',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue[700],
-                    ),
-                  ),
+                  icon: Icon(Icons.home, size: 35, color: const Color.fromARGB(255, 31, 31, 31),),
                 ),
 
-                TextButton(
-                  onPressed: () {
+                IconButton(
+                  onPressed: () 
+                  {
                     context.go('/stadistics');
                   },
-                  child: Text(
-                    'ESTADÍSTICAS',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[700],
-                    ),
-                  ),
+                  icon: Icon(Icons.line_axis_rounded, size: 35, color: const Color.fromARGB(255, 31, 31, 31),),
                 ),
               ],
             ),
-          ],
         ),
-      ),
-    );
+      );
   }
 }

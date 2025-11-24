@@ -70,8 +70,8 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           child: Column(
-            children: [
-              // HEADER ELEGANTE
+            children: 
+            [
               Container(
                 padding: EdgeInsets.all(25),
                 decoration: BoxDecoration(
@@ -545,40 +545,35 @@ class _HomePageState extends State<HomePage> {
         },
       ),
 
-      bottomNavigationBar: BottomAppBar(
-        height: 40,
-        color: const Color.fromARGB(255, 247, 247, 244),
-        shadowColor: Colors.black,
+      bottomNavigationBar: BottomAppBar
+      (
+        height: 50,
+        elevation: 0.2,
+        shadowColor: Color(0xFFE5E5E5),
+        notchMargin: 0,
+        padding: EdgeInsets.all(0),
 
-        child: Row(
+        child: Row
+        (
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+
+          children: 
+          [
             IconButton(
-              icon: const Icon(
-                Icons.home,
-                color: Color.fromARGB(255, 51, 51, 51),
-                size: 28,
-                shadows: [
-                  Shadow(
-                    color: Color.fromARGB(255, 248, 211, 4),
-                    blurRadius: 1.2,
-                  ),
-                ],
-              ),
-              onPressed: () {
+              onPressed: () 
+              {
                 context.go('/home');
               },
+              icon: Icon(Icons.home, size: 35, color: const Color.fromARGB(255, 31, 31, 31),),
             ),
+
             IconButton(
-              icon: const Icon(
-                Icons.line_axis_rounded,
-                color: Colors.black,
-                size: 28,
-              ),
-              onPressed: () {
+              onPressed: () 
+              {
                 context.go('/stadistics');
               },
+              icon: Icon(Icons.line_axis_rounded, size: 35, color: const Color.fromARGB(255, 31, 31, 31),),
             ),
           ],
         ),
