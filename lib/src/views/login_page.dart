@@ -75,7 +75,7 @@ class _LoginPageState extends State<LoginPage>
                 CustomTextField(
                   label: 'Contraseña',
                   hint: '••••••••',
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                   controller: _passwordController,
                   prefixIcon: Icons.lock_outlined,
                   suffixIcon: _obscurePassword

@@ -182,7 +182,12 @@ class _RegisterPageState extends State<RegisterPage>
                     onPressed: () 
                     {
                       AuthProvider auth = AuthProvider();
-                      auth.createUserWithEmailAndPassword(context, _emailController.text, _passwordController.text);
+
+                      if (_passwordController.text == _passwordController1.text) 
+                      {
+                        print("Funciona, usuario puede registrarse");
+                        auth.createUserWithEmailAndPassword(context, _emailController.text, _passwordController.text);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 46, 106, 235),

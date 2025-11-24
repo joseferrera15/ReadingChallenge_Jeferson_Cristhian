@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 //import 'package:proyecto_final/src/widgets/LinearProgress.dart';
 import 'package:proyecto_final/src/providers/book_provider.dart';
 import 'package:proyecto_final/src/models/book.dart';
+import 'package:proyecto_final/src/widgets/LinearProgress.dart';
 
 class Stadistics extends StatefulWidget 
 {
@@ -147,11 +148,29 @@ class _StadisticsState extends State<Stadistics>
 
               return ExpansionTile
               (
-                title: Title(color: Colors.amberAccent, child: Text(book.title)),
+                backgroundColor: Colors.green[50],
+                title: Title(color: Colors.amberAccent, child: Text(book.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)),
 
                 children: 
                 [
-                  Image(image: NetworkImage("https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg"), width: 100,)
+                  Image(image: NetworkImage("https://i.pinimg.com/736x/d1/d9/ba/d1d9ba37625f9a1210a432731e1754f3.jpg"), width: 100,),
+                  SizedBox(width: 5, height: 10,),
+                  Text("Total Pages: ${books[index].totalPages}"),
+                  SizedBox(width: 5, height: 5,),
+                  Text("Current Page: ${books[index].currentPage}"),
+                  SizedBox(width: 5, height: 10,),
+                  LinearProgres(
+                    value: (books[index].currentPage / books[index].totalPages),
+                    min: 4,
+                    width: 250,
+                    heightBar: 5,
+                  ),
+                  SizedBox(width: 5, height: 7,),
+                  Text(
+                    'Progress: ${((books[index].currentPage / books[index].totalPages) * 100).round()}%',
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+                  ),
+                  SizedBox(width: 5, height: 15,),
                 ],
               );
           });

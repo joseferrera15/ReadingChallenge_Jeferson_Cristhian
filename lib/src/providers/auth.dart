@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 
 class AuthProvider 
 {
-  //final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> createUserWithEmailAndPassword(BuildContext context, String email, String password) async 
@@ -17,8 +16,35 @@ class AuthProvider
         email: email,
         password: password,
       );
+
+      final userDoc = FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid);
     
-      await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!, context, password);
+      await userDoc.set
+      ({
+        'uid': userCredential.user!.uid,
+        'email': email,
+        'password': password,
+        'displayName': '', // Nombre por defecto
+        'photoURL': '',
+        'provider': 'password',
+        'createdAt': FieldValue.serverTimestamp(),
+        'lastLogin': FieldValue.serverTimestamp(),
+      });
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Registro exitoso!"),
+          backgroundColor: const Color.fromARGB(255, 214, 92, 92),
+        ),
+      );
+
+
+      if (context.mounted) 
+      {
+        context.go('/home');
+      }
+
+      //await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!, context, password);
     } 
     catch (e) 
     {
@@ -26,7 +52,7 @@ class AuthProvider
     }
   }
 
-  Future<void> signInWithEmailAndPassword(String email, String password, context) async 
+  Future<void> signInWithEmailAndPassword(String email, String password, BuildContext context) async 
   {
     try 
     {
@@ -34,11 +60,55 @@ class AuthProvider
         email: email,
         password: password,
       );
+
+      final userDoc = FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid);
+      final docSnapshot = await userDoc.get();
+
+      if (!docSnapshot.exists) 
+      {
+        // Crear documento si no existe (primer inicio de sesión)
+        await userDoc.set
+        ({
+          'uid': userCredential.user!.uid,
+          'email': email,
+          'password': password, // Guardamos la contraseña para referencia
+          'displayName': userCredential.user!.displayName ?? '',
+          'photoURL': '',
+          'provider': 'password',
+          'createdAt': FieldValue.serverTimestamp(),
+          'lastLogin': FieldValue.serverTimestamp(),
+        });
+        print("Nuevo usuario creado en Firestore");
+      }
+      else 
+      {
+        // Actualizar último login
+        await userDoc.update({
+          'lastLogin': FieldValue.serverTimestamp(),
+        });
+        print("Usuario existente, último login actualizado");
+      }
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Inicio de sesion exitoso!"),
+          backgroundColor: const Color.fromARGB(255, 92, 200, 214),
+        ),
+      );
     
-      await _checkAndCreateUserDocument(userCredential.user!, context, password);
+      if (context.mounted) 
+      {
+        context.go('/home');
+      }
+      
     } catch (e) 
     {
-      print("Error en iniciar sesion por correo: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error en iniciar sesion por correo: ${e.toString()}"),
+          backgroundColor: const Color.fromARGB(255, 214, 92, 92),
+        ),
+      );
     }
   }
 
@@ -67,7 +137,12 @@ class AuthProvider
       await _checkAndCreateUserDocument(FirebaseAuth.instance.currentUser!, context, null);
     } catch (e) 
     {
-      print("Error en Google Sign-In: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error en iniciar sesion por google: ${e.toString()}"),
+          backgroundColor: const Color.fromARGB(255, 214, 92, 92),
+        ),
+      );
     }
   }
 
@@ -80,6 +155,8 @@ class AuthProvider
     if (!docSnapshot.exists) 
     {
       // Crear nuevo documento si no existe
+      print(user.providerData.first);
+
       if (user.providerData.first != "google.com") 
       {
         await userDoc.set({
@@ -105,12 +182,34 @@ class AuthProvider
           'lastLogin': FieldValue.serverTimestamp(),
         });
       }
-    } else 
+
+      context.go('/home');
+    } 
+    else 
     {
+      print("Ya existe el usuario");
       // Actualizar último login si ya existe
-      await userDoc.update({
-        'lastLogin': FieldValue.serverTimestamp(),
-      });
+      //final userData = docSnapshot.data() as Map<String, dynamic>?;
+      //final storedPassword = userData?['password'] as String?;
+
+      //if (password == storedPassword) 
+      //{
+        await userDoc.update({
+          'lastLogin': FieldValue.serverTimestamp(),
+        });
+      //}
+      //else
+      //{
+       /* ScaffoldMessenger.of(context).showSnackBar
+        (
+          SnackBar(
+            content: Text('Email or password are incorrect. Try again!'),
+            backgroundColor: const Color.fromARGB(255, 206, 60, 35),
+          ),
+        );
+
+        context.go('/login');*/
+      //}
     }
 
     context.go('/home');
